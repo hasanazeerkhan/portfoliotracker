@@ -27,8 +27,18 @@ exports.handler = async (event, context) => {
         const silver = parseRates($s);
         const ratio = (gold.today / silver.today).toFixed(2);
 
-        let advice = ratio < 60 ? "BUY GOLD" : (ratio > 80 ? "BUY SILVER" : "BALANCED");
-        let explanation = ratio < 60 ? "Gold is undervalued relative to silver. Focus on gold for stability and value." : (ratio > 80 ? "Silver is undervalued relative to gold. Focus on silver for better growth potential." : "The ratio is in a neutral zone. Maintain equal weight.");
+        // Updated Strategy Text
+        let advice, explanation;
+        if (ratio > 80) {
+            advice = "BUY SILVER";
+            explanation = "Silver is undervalued relative to gold. Focus on silver for better growth potential.";
+        } else if (ratio < 60) {
+            advice = "BUY GOLD";
+            explanation = "Gold is undervalued relative to silver. Focus on gold for stability and value.";
+        } else {
+            advice = "BALANCED";
+            explanation = "The ratio is in a neutral zone. Maintain equal weight in both gold and silver.";
+        }
 
         return {
             statusCode: 200,
