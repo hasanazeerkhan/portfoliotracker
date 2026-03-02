@@ -4,94 +4,135 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="favicon.png">
-    <title>Trichy Portfolio | Gold & Silver</title>
+    <title>Gold & Silver Portfolio</title>
     <style>
         :root {
-            --bg: #0d1117; --card: #161b22; --border: #30363d;
-            --gold: #f1c40f; --silver: #58a6ff;
-            --up: #3fb950; --down: #f85149; --text: #c9d1d9; --white: #f0f6fc;
+            --bg: #14121a; --card: #1d1b26; --border: #2d2b38;
+            --gold: #c384fd; --silver: #58a6ff; --white: #ffffff;
+            --text: #8e8c9a; --val-grad: linear-gradient(90deg, #232235 0%, #1c1a2b 100%);
+            --up: #3fb950; --down: #f85149;
         }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; padding: 15px; margin: 0; }
-        .container { max-width: 800px; margin: auto; }
+        body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; padding: 16px; margin: 0; }
+        .container { max-width: 1100px; margin: auto; }
         
-        .intel-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-        .badge { background: var(--card); padding: 8px 12px; border-radius: 8px; font-size: 0.7rem; border: 1px solid var(--border); font-weight: 600; }
-        .intel-val { color: var(--gold); margin-left: 5px; }
+        header { padding: 24px 0; }
+        .site-name { font-weight: 800; font-size: 28px; color: var(--white); letter-spacing: -0.5px; }
 
-        .header-box { background: linear-gradient(145deg, #1c2128, #161b22); padding: 25px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .val-main { font-size: clamp(2rem, 8vw, 3.2rem); font-weight: 800; color: var(--white); margin: 5px 0; }
-        
-        .action-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; flex-wrap: wrap; gap: 10px; }
-        .mode-toggle { background: #000; padding: 4px; border-radius: 10px; display: flex; }
-        .mode-btn { border: none; padding: 6px 15px; border-radius: 8px; cursor: pointer; font-size: 0.7rem; font-weight: 700; color: #8b949e; background: transparent; }
-        .mode-btn.active { background: var(--gold); color: #000; }
-        .btn-fetch { background: transparent; color: var(--gold); border: 1px solid var(--gold); padding: 8px 15px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.7rem; }
+        /* Integrated Header Card */
+        .portfolio-card { 
+            background: var(--val-grad); border: 1px solid #2d2b45; 
+            border-radius: 20px; padding: 32px; margin-bottom: 24px; 
+            position: relative; overflow: hidden;
+        }
+        .p-label { color: #4f46e5; text-transform: uppercase; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .p-val { font-size: 64px; font-weight: 800; letter-spacing: -2px; margin: 0; }
+        .daily-shift { font-size: 18px; font-weight: 700; margin-top: 10px; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
-        .card { background: var(--card); padding: 20px; border-radius: 16px; border: 1px solid var(--border); }
-        .price-row { display: flex; justify-content: space-between; align-items: flex-end; }
-        .price-big { font-size: 2.2rem; font-weight: 700; color: var(--white); margin: 5px 0; }
-        
-        .input-area { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-        input { background: #0d1117; border: 1px solid var(--border); color: #fff; padding: 8px; border-radius: 6px; width: 70px; text-align: center; outline: none; }
-        
+        /* Top-Right Controls - Aligned with image_26eedd */
+        .header-controls { 
+            position: absolute; top: 32px; right: 32px; 
+            display: flex; flex-direction: column; align-items: flex-end; gap: 10px; 
+        }
+        .loc-badge { 
+            background: rgba(37, 35, 46, 0.6); border: 1px solid var(--border); 
+            padding: 6px 14px; border-radius: 8px; font-size: 12px; color: var(--text); 
+            display: flex; align-items: center; gap: 6px;
+        }
+        .refresh-btn { 
+            background: transparent; border: 1px solid var(--gold); color: var(--gold); 
+            padding: 8px 20px; border-radius: 10px; font-weight: 800; 
+            cursor: pointer; font-size: 12px; text-transform: uppercase; transition: 0.2s;
+        }
+        .refresh-btn:hover { background: var(--gold); color: #000; }
+
+        /* Buy/Sell Switcher */
+        .toggle-box { background: #000; padding: 4px; border-radius: 12px; display: flex; margin-top: 5px; }
+        .btn-toggle { 
+            background: transparent; border: none; color: var(--text); 
+            padding: 8px 18px; border-radius: 8px; cursor: pointer; 
+            font-size: 12px; font-weight: 800; 
+        }
+        .btn-toggle.active { background: var(--gold); color: #000; }
+
+        /* Asset Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 24px; }
+        .asset-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 28px; }
+        .asset-header { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; margin-bottom: 14px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .price-big { font-size: 48px; font-weight: 800; margin: 0; }
+        .unit { font-size: 18px; color: var(--text); font-weight: 400; }
+        .mkt-move { font-size: 14px; font-weight: 700; text-align: right; margin-top: -38px; }
+
+        .card-footer { display: flex; justify-content: space-between; padding-top: 24px; border-top: 1px solid #2a2835; margin-top: 35px; }
+        .f-label { font-size: 12px; color: var(--text); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+        .f-val { font-size: 28px; font-weight: 800; }
+        .holdings-input { background: #121118; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 10px; width: 90px; font-size: 22px; font-weight: 800; }
+
+        /* Strategy Analysis - Aligned with image_26f63c */
+        .strategy-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-top: 24px; }
+        .strat-title { color: var(--gold); font-weight: 700; font-size: 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .strat-ui { display: flex; align-items: center; background: rgba(0,0,0,0.25); border-radius: 16px; padding: 20px; }
+        .ratio-col { border-right: 1px solid var(--border); padding-right: 30px; min-width: 100px; }
+        .advice-col { flex: 1; padding-left: 30px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .advice-text { font-size: 16px; color: var(--white); font-weight: 500; line-height: 1.4; }
+        .advice-badge { background: var(--gold); color: #000; padding: 8px 18px; border-radius: 100px; font-size: 13px; font-weight: 800; white-space: nowrap; }
+
         .gain { color: var(--up); } .loss { color: var(--down); }
-        .label { font-size: 0.6rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
-        .shift-val { font-weight: 700; font-size: 0.9rem; }
+        @media (max-width: 700px) { .header-controls { position: static; align-items: flex-start; margin-top: 20px; } .strat-ui { flex-direction: column; align-items: flex-start; gap: 20px; } .ratio-col { border-right: none; } .advice-col { padding-left: 0; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="intel-bar">
-        <div class="badge">RATIO: <span id="r-val" class="intel-val">0</span> <span id="r-s" style="font-size: 0.6rem;"></span></div>
-        <div class="badge">ADVICE: <span id="advice" class="intel-val">---</span></div>
-        <div class="badge" id="date-loc" style="margin-left:auto">LOADING...</div>
-    </div>
+    <header><div class="site-name">Hello Hasan ❤️</div></header>
 
-    <div class="header-box">
-        <div id="val-label" class="label">Estimated Buy Value</div>
-        <div id="total-val" class="val-main">₹0</div>
-        <div id="total-shift" class="shift-val">₹0 (Daily Change)</div>
-        <div class="action-row">
-            <div class="mode-toggle">
-                <button id="btn-buy" class="mode-btn active" onclick="setMode('buy')">BUY</button>
-                <button id="btn-sell" class="mode-btn" onclick="setMode('sell')">SELL</button>
+    <div class="portfolio-card">
+        <div class="p-label">Portfolio Valuation</div>
+        <div class="p-val" id="total-val">₹0</div>
+        <div id="total-shift" class="daily-shift">₹0</div>
+        
+        <div class="header-controls">
+            <div class="loc-badge">📍 TRICHY, TN</div>
+            <button class="refresh-btn" onclick="refresh()">Refresh</button>
+            <div class="toggle-box">
+                <button id="btn-buy" class="btn-toggle active" onclick="setMode('buy')">BUY</button>
+                <button id="btn-sell" class="btn-toggle" onclick="setMode('sell')">SELL</button>
             </div>
-            <button class="btn-fetch" onclick="refresh()">FETCH LATEST</button>
         </div>
     </div>
 
     <div class="grid">
-        <div class="card" style="border-top: 3px solid var(--gold)">
-            <div class="label">24K Gold / gram</div>
-            <div class="price-row">
-                <div id="gp" class="price-big">₹0</div>
-                <div id="g-mkt" style="font-size: 0.8rem; font-weight: 600;">₹0</div>
-            </div>
-            <div class="input-area">
-                <div><label class="label">Weight (g)</label><br><input type="number" id="gw" oninput="calc()"></div>
-                <div style="text-align:right">
-                    <label class="label">Valuation</label>
-                    <div id="gv" style="font-weight:700; color: var(--white);">₹0</div>
-                    <div id="gs" class="shift-val" style="font-size: 0.75rem;">₹0</div>
-                </div>
+        <div class="asset-card">
+            <div class="asset-header"><span class="dot" style="background:var(--gold)"></span> 24K Gold</div>
+            <div class="price-big" id="gp">₹0 <span class="unit">/ gram</span></div>
+            <div id="gm" class="mkt-move">...</div>
+            <div class="card-footer">
+                <div><div class="f-label">Holdings (g)</div><input type="number" id="gw" class="holdings-input" oninput="calc()"></div>
+                <div style="text-align: right;"><div class="f-label">Valuation</div><div id="gv" class="f-val">₹0</div><div id="gs" class="gain" style="font-size:13px; font-weight:700;">+₹0</div></div>
             </div>
         </div>
 
-        <div class="card" style="border-top: 3px solid var(--silver)">
-            <div class="label">Silver / gram</div>
-            <div class="price-row">
-                <div id="sp" class="price-big">₹0</div>
-                <div id="s-mkt" style="font-size: 0.8rem; font-weight: 600;">₹0</div>
+        <div class="asset-card">
+            <div class="asset-header"><span class="dot" style="background:var(--silver)"></span> Silver /g</div>
+            <div class="price-big" id="sp">₹0 <span class="unit">/ gram</span></div>
+            <div id="sm" class="mkt-move">...</div>
+            <div class="card-footer">
+                <div><div class="f-label">Holdings (g)</div><input type="number" id="sw" class="holdings-input" oninput="calc()"></div>
+                <div style="text-align: right;"><div class="f-label">Valuation</div><div id="sv" class="f-val">₹0</div><div id="ss" class="gain" style="font-size:13px; font-weight:700;">+₹0</div></div>
             </div>
-            <div class="input-area">
-                <div><label class="label">Weight (g)</label><br><input type="number" id="sw" oninput="calc()"></div>
-                <div style="text-align:right">
-                    <label class="label">Valuation</label>
-                    <div id="sv" style="font-weight:700; color: var(--white);">₹0</div>
-                    <div id="ss" class="shift-val" style="font-size: 0.75rem;">₹0</div>
-                </div>
+        </div>
+    </div>
+
+    <div class="strategy-box">
+        <div class="strat-title">⚖️ Market Strategy Analysis</div>
+        <div class="strat-ui">
+            <div class="ratio-col">
+                <div class="f-label">Ratio</div>
+                <div id="r-val" style="font-size: 32px; font-weight: 800; color: var(--gold);">0.00</div>
+            </div>
+            <div class="advice-col">
+                <div id="advice-text" class="advice-text">Gold is undervalued relative to silver. Focus on gold for stability and value.</div>
+                <div id="advice-tag" class="advice-badge">BUY GOLD</div>
             </div>
         </div>
     </div>
@@ -100,50 +141,62 @@
 <script>
     let d = null; let mode = 'buy';
     window.onload = () => {
-        document.getElementById('gw').value = localStorage.getItem('gw') || '0';
-        document.getElementById('sw').value = localStorage.getItem('sw') || '0';
+        document.getElementById('gw').value = localStorage.getItem('gw') || '46';
+        document.getElementById('sw').value = localStorage.getItem('sw') || '714';
         refresh();
     };
+
     function setMode(m) {
         mode = m;
         document.getElementById('btn-buy').classList.toggle('active', m === 'buy');
         document.getElementById('btn-sell').classList.toggle('active', m === 'sell');
-        document.getElementById('val-label').innerText = m === 'buy' ? 'Estimated Buy Value' : 'Liquidation Value (Sell)';
         calc();
     }
+
     async function refresh() {
+        const btn = document.querySelector('.refresh-btn');
+        btn.innerText = "Wait...";
         try {
             const res = await fetch('/.netlify/functions/rates');
             d = await res.json();
-            document.getElementById('date-loc').innerText = `${d.date.toUpperCase()} • TRICHY`;
-            const r = parseFloat(d.ratio); const rs = r - parseFloat(d.ratioYesterday);
-            document.getElementById('r-val').innerText = r.toFixed(2);
-            document.getElementById('r-s').innerText = `${rs >= 0 ? '+' : ''}${rs.toFixed(2)}`;
-            document.getElementById('r-s').className = rs >= 0 ? 'gain' : 'loss';
-            document.getElementById('advice').innerText = r < 60 ? "BUY GOLD" : (r > 80 ? "BUY SILVER" : "HOLD");
+            document.getElementById('r-val').innerText = d.ratio;
+            document.getElementById('advice-tag').innerText = d.strategy.advice;
+            document.getElementById('advice-text').innerText = d.strategy.explanation;
+            fmtMkt('gm', d.gold.change); fmtMkt('sm', d.silver.change);
             calc();
-        } catch (e) { console.error("Function Error"); }
+        } catch (e) { console.error("Refresh failed"); }
+        btn.innerText = "Refresh";
     }
+
+    function fmtMkt(id, v) {
+        const el = document.getElementById(id); const s = v >= 0 ? '+' : '-';
+        el.className = `mkt-move ${v >= 0 ? 'gain' : 'loss'}`;
+        el.innerText = `${s}₹${Math.abs(v)} /g`;
+    }
+
     function calc() {
         if (!d) return;
         const gw = parseFloat(document.getElementById('gw').value) || 0;
         const sw = parseFloat(document.getElementById('sw').value) || 0;
         localStorage.setItem('gw', gw); localStorage.setItem('sw', sw);
-        const ag = mode === 'buy' ? d.gold.buy : d.gold.sell;
-        const as = mode === 'buy' ? d.silver.buy : d.silver.sell;
-        fmt('g-mkt', d.gold.mktChange, "/g"); fmt('s-mkt', d.silver.mktChange, "/g");
-        const gS = d.gold.mktChange * gw; const sS = d.silver.mktChange * sw;
-        document.getElementById('gp').innerText = `₹${ag.toLocaleString('en-IN')}`;
-        document.getElementById('sp').innerText = `₹${as.toLocaleString('en-IN')}`;
-        document.getElementById('gv').innerText = `₹${(gw * ag).toLocaleString('en-IN')}`;
-        document.getElementById('sv').innerText = `₹${(sw * as).toLocaleString('en-IN')}`;
-        document.getElementById('total-val').innerText = `₹${((gw * ag) + (sw * as)).toLocaleString('en-IN')}`;
-        fmt('gs', gS); fmt('ss', sS); fmt('total-shift', gS + sS, "(Daily Shift)");
+        const gp = mode === 'buy' ? d.gold.buy : d.gold.sell;
+        const sp = mode === 'buy' ? d.silver.buy : d.silver.sell;
+        document.getElementById('gp').innerHTML = `₹${gp.toLocaleString()} <span class="unit">/ gram</span>`;
+        document.getElementById('sp').innerHTML = `₹${sp.toLocaleString()} <span class="unit">/ gram</span>`;
+        const gv = gw * gp; const sv = sw * sp;
+        const tv = gv + sv;
+        const gd = d.gold.change * gw; const sd = d.silver.change * sw;
+        const td = gd + sd;
+        document.getElementById('gv').innerText = `₹${gv.toLocaleString()}`;
+        document.getElementById('sv').innerText = `₹${sv.toLocaleString()}`;
+        document.getElementById('total-val').innerText = `₹${tv.toLocaleString()}`;
+        fmtB('gs', gd); fmtB('ss', sd); fmtB('total-shift', td);
     }
-    function fmt(id, v, suf = "") {
+
+    function fmtB(id, v) {
         const el = document.getElementById(id); const s = v >= 0 ? '+' : '-';
-        el.className = `shift-val ${v >= 0 ? 'gain' : 'loss'}`;
-        el.innerText = `${s}₹${Math.abs(v).toLocaleString('en-IN')} ${suf}`;
+        el.className = `${id === 'total-shift' ? 'daily-shift' : ''} ${v >= 0 ? 'gain' : 'loss'}`;
+        el.innerText = `${s}₹${Math.abs(v).toLocaleString()}`;
     }
 </script>
 </body>
