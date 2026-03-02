@@ -4,22 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="favicon.png">
-    <title>Portfolio | Gold & Silver Tracker</title>
+    <title>Portfolio Tracker | Gold & Silver</title>
     <style>
         :root {
             --bg: #14121a; --card: #1d1b26; --border: #2d2b38;
-            /* Reverted Color Palette */
-            --gold: #c384fd; 
-            --silver: #58a6ff; 
-            --white: #ffffff; --text: #8e8c9a;
-            --val-grad: linear-gradient(90deg, #232235 0%, #1c1a2b 100%);
+            --gold: #c384fd; --silver: #58a6ff; --white: #ffffff;
+            --text: #8e8c9a; --val-grad: linear-gradient(90deg, #232235 0%, #1c1a2b 100%);
             --up: #3fb950; --down: #f85149;
         }
         body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; padding: 16px; margin: 0; }
         .container { max-width: 1100px; margin: auto; }
         
-        header { padding: 24px 0; }
-        /* Generic Greeting */
+        header { padding: 20px 0; }
+        /* Salute Greeting */
         .site-name { font-weight: 800; font-size: 28px; color: var(--white); letter-spacing: -0.5px; }
 
         .portfolio-card { 
@@ -31,13 +28,14 @@
         .p-val { font-size: 64px; font-weight: 800; letter-spacing: -2px; margin: 0; }
         .daily-shift { font-size: 18px; font-weight: 700; margin-top: 10px; }
 
+        /* Integrated Controls */
         .header-controls { 
             position: absolute; top: 32px; right: 32px; 
             display: flex; flex-direction: column; align-items: flex-end; gap: 10px; 
         }
         .loc-badge { 
             background: rgba(37, 35, 46, 0.6); border: 1px solid var(--border); 
-            padding: 6px 14px; border-radius: 8px; font-size: 12px; color: var(--text); 
+            padding: 6px 14px; border-radius: 8px; font-size: 11px; color: var(--text); 
         }
         .refresh-btn { 
             background: transparent; border: 1px solid var(--gold); color: var(--gold); 
@@ -48,6 +46,7 @@
         .btn-toggle { background: transparent; border: none; color: var(--text); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 800; }
         .btn-toggle.active { background: var(--gold); color: #000; }
 
+        /* Assets */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; }
         .asset-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 28px; }
         .asset-header { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; margin-bottom: 14px; }
@@ -61,6 +60,7 @@
         .f-val { font-size: 28px; font-weight: 800; }
         .holdings-input { background: #121118; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 10px; width: 90px; font-size: 22px; font-weight: 800; }
 
+        /* Strategy Box */
         .strategy-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-top: 24px; }
         .strat-title { color: var(--gold); font-weight: 700; font-size: 16px; margin-bottom: 20px; }
         .strat-ui { display: flex; align-items: center; background: rgba(0,0,0,0.25); border-radius: 16px; padding: 20px; }
@@ -71,24 +71,31 @@
 
         .gain { color: var(--up); } .loss { color: var(--down); }
 
-        @media (max-width: 700px) {
-            .header-controls { position: static; align-items: flex-start; margin-top: 20px; }
-            .p-val { font-size: 48px; }
-            .strat-ui { flex-direction: column; align-items: flex-start; gap: 20px; }
-            .ratio-col { border-right: none; padding-right: 0; }
-            .advice-col { padding-left: 0; flex-direction: column; align-items: flex-start; }
+        /* Mobile Viewport Optimizations */
+        @media (max-width: 768px) {
+            .site-name { font-size: 22px; }
+            .portfolio-card { padding: 24px; }
+            .p-val { font-size: 44px; margin-bottom: 100px; } /* Create space for absolute controls */
+            .header-controls { top: 120px; right: 24px; align-items: flex-start; width: calc(100% - 48px); flex-direction: row; flex-wrap: wrap; justify-content: space-between; }
+            .grid { grid-template-columns: 1fr; gap: 16px; }
+            .asset-card { padding: 20px; }
+            .price-big { font-size: 36px; }
+            .strat-ui { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .ratio-col { border-right: none; border-bottom: 1px solid var(--border); padding-right: 0; padding-bottom: 10px; width: 100%; }
+            .advice-col { padding-left: 0; flex-direction: column; align-items: flex-start; width: 100%; }
+            .advice-badge { margin-top: 10px; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header><div class="site-name">Welcome to Your Portfolio</div></header>
+    <header><div class="site-name">Hello 🫡</div></header>
 
     <div class="portfolio-card">
         <div class="p-label">Portfolio Valuation</div>
-        <div class="p-val" id="total-val">₹0</div>
-        <div id="total-shift" class="daily-shift">₹0</div>
+        <div class="p-val" id="total-val">₹ 0</div>
+        <div id="total-shift" class="daily-shift">₹ 0</div>
         
         <div class="header-controls">
             <div class="loc-badge">📍 TRICHY, TN</div>
@@ -103,21 +110,21 @@
     <div class="grid">
         <div class="asset-card">
             <div class="asset-header"><span class="dot" style="background:var(--gold)"></span> 24K Gold</div>
-            <div class="price-big" id="gp">₹0 <span class="unit">/ gram</span></div>
+            <div class="price-big" id="gp">₹ 0 <span class="unit">/ gram</span></div>
             <div id="gm" class="mkt-move">...</div>
             <div class="card-footer">
                 <div><div class="f-label">Holdings (g)</div><input type="number" id="gw" class="holdings-input" oninput="calc()"></div>
-                <div style="text-align: right;"><div class="f-label">Valuation</div><div id="gv" class="f-val">₹0</div><div id="gs" class="gain" style="font-size:13px; font-weight:700;">+₹0</div></div>
+                <div style="text-align: right;"><div class="f-label">Valuation</div><div id="gv" class="f-val">₹ 0</div><div id="gs" class="gain" style="font-size:13px; font-weight:700;">+₹ 0</div></div>
             </div>
         </div>
 
         <div class="asset-card">
             <div class="asset-header"><span class="dot" style="background:var(--silver)"></span> Silver /g</div>
-            <div class="price-big" id="sp">₹0 <span class="unit">/ gram</span></div>
+            <div class="price-big" id="sp">₹ 0 <span class="unit">/ gram</span></div>
             <div id="sm" class="mkt-move">...</div>
             <div class="card-footer">
                 <div><div class="f-label">Holdings (g)</div><input type="number" id="sw" class="holdings-input" oninput="calc()"></div>
-                <div style="text-align: right;"><div class="f-label">Valuation</div><div id="sv" class="f-val">₹0</div><div id="ss" class="gain" style="font-size:12px; font-weight:700;">+₹0</div></div>
+                <div style="text-align: right;"><div class="f-label">Valuation</div><div id="sv" class="f-val">₹ 0</div><div id="ss" class="gain" style="font-size:12px; font-weight:700;">+₹ 0</div></div>
             </div>
         </div>
     </div>
