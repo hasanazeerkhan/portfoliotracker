@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="favicon.png">
-    <title>Gold & Silver Portfolio</title>
+    <title>Hello Hasan ❤️ | Trichy Portfolio</title>
     <style>
         :root {
             --bg: #14121a; --card: #1d1b26; --border: #2d2b38;
@@ -15,70 +15,83 @@
         body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; padding: 16px; margin: 0; }
         .container { max-width: 1100px; margin: auto; }
         
-        header { padding: 24px 0; }
-        .site-name { font-weight: 800; font-size: 28px; color: var(--white); letter-spacing: -0.5px; }
+        header { padding: 15px 0; }
+        .site-name { font-weight: 800; font-size: 24px; color: var(--white); letter-spacing: -0.5px; }
 
-        /* Integrated Header Card */
         .portfolio-card { 
             background: var(--val-grad); border: 1px solid #2d2b45; 
             border-radius: 20px; padding: 32px; margin-bottom: 24px; 
             position: relative; overflow: hidden;
         }
-        .p-label { color: #4f46e5; text-transform: uppercase; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 8px; }
-        .p-val { font-size: 64px; font-weight: 800; letter-spacing: -2px; margin: 0; }
-        .daily-shift { font-size: 18px; font-weight: 700; margin-top: 10px; }
+        .p-label { color: #4f46e5; text-transform: uppercase; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .p-val { font-size: 56px; font-weight: 800; letter-spacing: -2px; margin: 0; }
+        .daily-shift { font-size: 16px; font-weight: 700; margin-top: 10px; }
 
-        /* Top-Right Controls - Aligned with image_26eedd */
         .header-controls { 
             position: absolute; top: 32px; right: 32px; 
             display: flex; flex-direction: column; align-items: flex-end; gap: 10px; 
         }
         .loc-badge { 
             background: rgba(37, 35, 46, 0.6); border: 1px solid var(--border); 
-            padding: 6px 14px; border-radius: 8px; font-size: 12px; color: var(--text); 
-            display: flex; align-items: center; gap: 6px;
+            padding: 6px 12px; border-radius: 8px; font-size: 11px; color: var(--text); 
         }
         .refresh-btn { 
             background: transparent; border: 1px solid var(--gold); color: var(--gold); 
-            padding: 8px 20px; border-radius: 10px; font-weight: 800; 
-            cursor: pointer; font-size: 12px; text-transform: uppercase; transition: 0.2s;
+            padding: 8px 16px; border-radius: 8px; font-weight: 800; 
+            cursor: pointer; font-size: 11px; text-transform: uppercase;
         }
-        .refresh-btn:hover { background: var(--gold); color: #000; }
 
-        /* Buy/Sell Switcher */
-        .toggle-box { background: #000; padding: 4px; border-radius: 12px; display: flex; margin-top: 5px; }
+        .toggle-box { background: #000; padding: 4px; border-radius: 10px; display: flex; }
         .btn-toggle { 
             background: transparent; border: none; color: var(--text); 
-            padding: 8px 18px; border-radius: 8px; cursor: pointer; 
-            font-size: 12px; font-weight: 800; 
+            padding: 6px 14px; border-radius: 8px; cursor: pointer; 
+            font-size: 11px; font-weight: 800; 
         }
         .btn-toggle.active { background: var(--gold); color: #000; }
 
-        /* Asset Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 24px; }
-        .asset-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 28px; }
-        .asset-header { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; margin-bottom: 14px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .price-big { font-size: 48px; font-weight: 800; margin: 0; }
-        .unit { font-size: 18px; color: var(--text); font-weight: 400; }
-        .mkt-move { font-size: 14px; font-weight: 700; text-align: right; margin-top: -38px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+        .asset-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; }
+        .asset-header { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; margin-bottom: 12px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .price-big { font-size: 36px; font-weight: 800; margin: 0; }
+        .unit { font-size: 14px; color: var(--text); font-weight: 400; }
+        .mkt-move { font-size: 13px; font-weight: 700; text-align: right; margin-top: -32px; }
 
-        .card-footer { display: flex; justify-content: space-between; padding-top: 24px; border-top: 1px solid #2a2835; margin-top: 35px; }
-        .f-label { font-size: 12px; color: var(--text); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
-        .f-val { font-size: 28px; font-weight: 800; }
-        .holdings-input { background: #121118; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 10px; width: 90px; font-size: 22px; font-weight: 800; }
+        .card-footer { display: flex; justify-content: space-between; padding-top: 20px; border-top: 1px solid #2a2835; margin-top: 25px; }
+        .f-label { font-size: 10px; color: var(--text); text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+        .f-val { font-size: 22px; font-weight: 800; }
+        .holdings-input { background: #121118; border: 1px solid var(--border); color: #fff; padding: 8px; border-radius: 8px; width: 75px; font-size: 18px; font-weight: 800; }
 
-        /* Strategy Analysis - Aligned with image_26f63c */
-        .strategy-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-top: 24px; }
-        .strat-title { color: var(--gold); font-weight: 700; font-size: 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .strat-ui { display: flex; align-items: center; background: rgba(0,0,0,0.25); border-radius: 16px; padding: 20px; }
-        .ratio-col { border-right: 1px solid var(--border); padding-right: 30px; min-width: 100px; }
-        .advice-col { flex: 1; padding-left: 30px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-        .advice-text { font-size: 16px; color: var(--white); font-weight: 500; line-height: 1.4; }
-        .advice-badge { background: var(--gold); color: #000; padding: 8px 18px; border-radius: 100px; font-size: 13px; font-weight: 800; white-space: nowrap; }
+        .strategy-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-top: 20px; }
+        .strat-title { color: var(--gold); font-weight: 700; font-size: 14px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .strat-ui { display: flex; align-items: center; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 16px; }
+        .ratio-col { border-right: 1px solid var(--border); padding-right: 20px; }
+        .advice-col { flex: 1; padding-left: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .advice-text { font-size: 14px; color: var(--white); font-weight: 500; line-height: 1.4; }
+        .advice-badge { background: var(--gold); color: #000; padding: 6px 12px; border-radius: 100px; font-size: 11px; font-weight: 800; white-space: nowrap; }
 
         .gain { color: var(--up); } .loss { color: var(--down); }
-        @media (max-width: 700px) { .header-controls { position: static; align-items: flex-start; margin-top: 20px; } .strat-ui { flex-direction: column; align-items: flex-start; gap: 20px; } .ratio-col { border-right: none; } .advice-col { padding-left: 0; } }
+
+        /* --- MOBILE OPTIMIZATIONS --- */
+        @media (max-width: 600px) {
+            header { padding: 10px 0; }
+            .site-name { font-size: 20px; }
+            .portfolio-card { padding: 20px; }
+            .p-val { font-size: 42px; }
+            .header-controls { 
+                position: static; 
+                flex-direction: row; 
+                flex-wrap: wrap; 
+                margin-top: 20px; 
+                justify-content: space-between; 
+                width: 100%; 
+            }
+            .grid { grid-template-columns: 1fr; }
+            .price-big { font-size: 32px; }
+            .strat-ui { flex-direction: column; align-items: flex-start; }
+            .ratio-col { border-right: none; border-bottom: 1px solid var(--border); padding-right: 0; padding-bottom: 12px; width: 100%; }
+            .advice-col { padding-left: 0; padding-top: 12px; flex-direction: column; align-items: flex-start; }
+        }
     </style>
 </head>
 <body>
@@ -108,17 +121,16 @@
             <div id="gm" class="mkt-move">...</div>
             <div class="card-footer">
                 <div><div class="f-label">Holdings (g)</div><input type="number" id="gw" class="holdings-input" oninput="calc()"></div>
-                <div style="text-align: right;"><div class="f-label">Valuation</div><div id="gv" class="f-val">₹0</div><div id="gs" class="gain" style="font-size:13px; font-weight:700;">+₹0</div></div>
+                <div style="text-align: right;"><div class="f-label">Valuation</div><div id="gv" class="f-val">₹0</div><div id="gs" class="gain" style="font-size:12px; font-weight:700;">+₹0</div></div>
             </div>
         </div>
-
         <div class="asset-card">
             <div class="asset-header"><span class="dot" style="background:var(--silver)"></span> Silver /g</div>
             <div class="price-big" id="sp">₹0 <span class="unit">/ gram</span></div>
             <div id="sm" class="mkt-move">...</div>
             <div class="card-footer">
                 <div><div class="f-label">Holdings (g)</div><input type="number" id="sw" class="holdings-input" oninput="calc()"></div>
-                <div style="text-align: right;"><div class="f-label">Valuation</div><div id="sv" class="f-val">₹0</div><div id="ss" class="gain" style="font-size:13px; font-weight:700;">+₹0</div></div>
+                <div style="text-align: right;"><div class="f-label">Valuation</div><div id="sv" class="f-val">₹0</div><div id="ss" class="gain" style="font-size:12px; font-weight:700;">+₹0</div></div>
             </div>
         </div>
     </div>
@@ -128,7 +140,7 @@
         <div class="strat-ui">
             <div class="ratio-col">
                 <div class="f-label">Ratio</div>
-                <div id="r-val" style="font-size: 32px; font-weight: 800; color: var(--gold);">0.00</div>
+                <div id="r-val" style="font-size: 28px; font-weight: 800; color: var(--gold);">0.00</div>
             </div>
             <div class="advice-col">
                 <div id="advice-text" class="advice-text">Gold is undervalued relative to silver. Focus on gold for stability and value.</div>
@@ -139,20 +151,19 @@
 </div>
 
 <script>
+    /* Same script as previous version */
     let d = null; let mode = 'buy';
     window.onload = () => {
         document.getElementById('gw').value = localStorage.getItem('gw') || '46';
         document.getElementById('sw').value = localStorage.getItem('sw') || '714';
         refresh();
     };
-
     function setMode(m) {
         mode = m;
         document.getElementById('btn-buy').classList.toggle('active', m === 'buy');
         document.getElementById('btn-sell').classList.toggle('active', m === 'sell');
         calc();
     }
-
     async function refresh() {
         const btn = document.querySelector('.refresh-btn');
         btn.innerText = "Wait...";
@@ -167,13 +178,11 @@
         } catch (e) { console.error("Refresh failed"); }
         btn.innerText = "Refresh";
     }
-
     function fmtMkt(id, v) {
         const el = document.getElementById(id); const s = v >= 0 ? '+' : '-';
         el.className = `mkt-move ${v >= 0 ? 'gain' : 'loss'}`;
         el.innerText = `${s}₹${Math.abs(v)} /g`;
     }
-
     function calc() {
         if (!d) return;
         const gw = parseFloat(document.getElementById('gw').value) || 0;
@@ -192,7 +201,6 @@
         document.getElementById('total-val').innerText = `₹${tv.toLocaleString()}`;
         fmtB('gs', gd); fmtB('ss', sd); fmtB('total-shift', td);
     }
-
     function fmtB(id, v) {
         const el = document.getElementById(id); const s = v >= 0 ? '+' : '-';
         el.className = `${id === 'total-shift' ? 'daily-shift' : ''} ${v >= 0 ? 'gain' : 'loss'}`;
