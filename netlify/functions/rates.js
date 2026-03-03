@@ -20,34 +20,24 @@ exports.handler = async (event, context) => {
             const table = $('table').first();
             const today = parseFloat(table.find('tr').eq(1).find('td').eq(1).text().replace(/[^\d.]/g, ''));
             const yesterday = parseFloat(table.find('tr').eq(1).find('td').eq(2).text().replace(/[^\d.]/g, ''));
-            return { today, yesterday, change: (today - yesterday) };
+            return { today, yesterday, change: today - yesterday };
         };
 
         const gold = parseRates($g);
         const silver = parseRates($s);
         const ratio = (gold.today / silver.today).toFixed(2);
 
-        // Updated Strategy Text
-        let advice, explanation;
-        if (ratio > 80) {
-            advice = "BUY SILVER";
-            explanation = "Silver is undervalued relative to gold. Focus on silver for better growth potential.";
-        } else if (ratio < 60) {
-            advice = "BUY GOLD";
-            explanation = "Gold is undervalued relative to silver. Focus on gold for stability and value.";
-        } else {
-            advice = "BALANCED";
-            explanation = "The ratio is in a neutral zone. Maintain equal weight in both gold and silver.";
-        }
+        let advice = ratio < 60 ? "BUY GOLD" : (ratio > 80 ? "BUY SILVER" : "BALANCED");
+        let explanation = ratio < 60 ? "Gold is at a better value right now. Good time to add for stability." : (ratio > 80 ? "Silver is cheaper than usual. Better growth potential." : "Market is neutral.");
 
         return {
             statusCode: 200,
             headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
             body: JSON.stringify({
-                date: "March 2, 2026",
-                gold: { buy: gold.today, sell: Math.round(gold.today * 0.97), yesterday: gold.yesterday, change: gold.change },
-                silver: { buy: silver.today, sell: Math.round(silver.today * 0.97), yesterday: silver.yesterday, change: silver.change },
-                ratio: ratio,
+                date: "March 3, 2026",
+                gold: { price: gold.today, prevClose: gold.yesterday, change: gold.change },
+                silver: { price: silver.today, prevClose: silver.yesterday, change: silver.change },
+                ratio: { current: ratio, deviation: (((ratio - 62) / 62) * 100).toFixed(1) },
                 strategy: { advice, explanation }
             })
         };
@@ -55,11 +45,10 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 200,
             body: JSON.stringify({
-                date: "March 2, 2026",
-                gold: { buy: 17084, sell: 16571, yesterday: 17209, change: -125 },
-                silver: { buy: 315, sell: 305, yesterday: 325, change: -10 },
-                ratio: "54.23",
-                strategy: { advice: "BUY GOLD", explanation: "Gold is undervalued relative to silver. Focus on gold for stability and value." }
+                gold: { price: 17084, prevClose: 17209, change: -125 },
+                silver: { price: 315, prevClose: 325, change: -10 },
+                ratio: { current: "54.23", deviation: "-12.5" },
+                strategy: { advice: "BUY GOLD", explanation: "Gold is at a better value right now. Good time to add for stability." }
             })
         };
     }
