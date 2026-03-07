@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -30,6 +30,7 @@
       background: radial-gradient(1200px 700px at 50% -10%, #121a2d 0%, var(--bg) 60%);
       color: var(--text);
       font-family: 'IBM Plex Mono', monospace;
+      font-variant-numeric: tabular-nums;
       min-height: 100vh;
       padding: 28px 16px;
     }
@@ -105,14 +106,46 @@
 
     .metals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
     .metal-label { font-size: var(--fs-label); letter-spacing: 0.12em; margin-bottom: 12px; }
-    .metal-price-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+    .metal-price-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; min-height: 48px; }
     .metal-price { font-size: clamp(1.8rem, 3.5vw, 3rem); font-weight: 700; margin-bottom: 0; }
-    .metal-bottom { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; }
+    .metal-bottom { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+    .val-col {
+      min-width: 248px;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
     .holdings-label, .val-label { font-size: var(--fs-label); color: #8d95a9; letter-spacing: 0.1em; margin-bottom: 8px; }
     .val-label { text-align:right; }
-    .val-num { font-size: clamp(1.45rem, 2.8vw, 2.3rem); font-weight: 700; text-align: right; }
-    .val-change { font-size: clamp(0.9rem, 1.45vw, 1rem); margin-top: 4px; text-align: right; }
+    .val-num { font-size: clamp(1.45rem, 2.8vw, 2.3rem); font-weight: 700; text-align: right; line-height: 1.1; min-height: 40px; }
+    .val-change { font-size: clamp(0.9rem, 1.45vw, 1rem); margin-top: 4px; text-align: right; min-height: 22px; }
     .hint { font-size: 0.68rem; color: var(--dim); margin-top: 6px; }
+    .invested-wrap { margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); width: 100%; }
+    .invested-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #a8b0c4; cursor: pointer; }
+    .invested-toggle input { accent-color: #8b5cf6; }
+    .invested-input-row { margin-top: 6px; display: none; }
+    .invested-input-row.active { display: block; }
+    .invested-label { font-size: 0.66rem; color: #9aa3b8; letter-spacing: 0.08em; margin-bottom: 4px; }
+    .invested-input {
+      width: 100%;
+      max-width: 100%;
+      background: #0e1320;
+      border: 1px solid #2d3650;
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 8px 10px;
+      outline: none;
+    }
+    .invested-input:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
+    .invested-error { color: var(--loss); font-size: 0.68rem; margin-top: 4px; display: none; }
+    .invested-error.active { display: block; }
+    .invested-summary { margin-top: 4px; font-size: 0.68rem; color: #9aa3b8; }
+    .returns-row { margin-top: 8px; font-size: 0.74rem; line-height: 1.45; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 6px 8px; width: 100%; }
+    .returns-row.hidden { display: none; }
 
     input[type=number] {
       background: #0e1320;
@@ -123,7 +156,7 @@
       font-size: clamp(1.2rem, 2.2vw, 1.6rem);
       font-weight: 600;
       padding: 10px 12px;
-      width: 128px;
+      width: 140px;
       outline: none;
     }
     input[type=number]:focus-visible, button:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
@@ -164,7 +197,7 @@
 
     .trend-up { color: var(--gain); }
     .trend-down { color: var(--loss); }
-    .rate-diff { font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+    .rate-diff { font-size: 0.78rem; font-weight: 700; white-space: nowrap; min-height: 20px; display: inline-flex; align-items: center; }
 
     .green { color: var(--gain); }
     .red { color: var(--loss); }
@@ -197,6 +230,7 @@
       .stats-row { grid-template-columns: 1fr; gap: 12px; }
       .matrix { grid-template-columns: 1fr; }
       .metal-bottom { flex-direction: column; align-items: flex-start; }
+      .val-col { min-width: 100%; text-align: left; align-items: flex-start; }
       .val-label, .val-num, .val-change { text-align: left; }
       .btn-row { display: grid; grid-template-columns: 1fr 1fr; }
       .btn-purple { width: 100%; }
@@ -224,8 +258,8 @@
   <div class="card">
     <div class="port-inner">
       <div>
-        <div class="port-title">NET PORTFOLIO VALUATION</div>
-        <div class="port-val" id="totalVal">₹ --</div>
+        <div class="port-title">Net Portfolio Valuation</div>
+        <div class="port-val" id="totalVal">&#8377; --</div>
         <div class="port-change" id="totalChange">--</div>
         <div class="port-prev" id="prevClose">Previous Close: --</div>
         <div class="as-of" id="asOf">As of --</div>
@@ -237,49 +271,75 @@
           <button class="btn-outline active" id="buyBtn" onclick="setMode('buy')">BUY</button>
           <button class="btn-outline" id="sellBtn" onclick="setMode('sell')">SELL</button>
         </div>
-        <div id="modeHelp" class="last-updated">BUY mode uses spot price.</div>
-        <div id="sourceChip" class="source-chip">Source: --</div>
+        <div id="modeHelp" class="last-updated">Buy mode uses spot rates.</div>
+        <div id="sourceChip" class="source-chip">Data Source: --</div>
       </div>
     </div>
   </div>
 
   <div class="metals-grid">
     <div class="card gold-card">
-      <div class="metal-label amber">24K GOLD</div>
+      <div class="metal-label amber">24k Gold</div>
       <div class="metal-price-row">
-        <div class="metal-price gold" id="goldPrice">₹ --</div>
+        <div class="metal-price gold" id="goldPrice">&#8377; --</div>
         <div class="rate-diff" id="goldRateDiff">--</div>
       </div>
       <div class="metal-bottom">
         <div>
-          <div class="holdings-label">HOLDINGS (G)</div>
+          <div class="holdings-label">Holdings (g)</div>
           <input type="number" id="goldHoldings" value="46" min="0" step="0.1" inputmode="decimal" oninput="recalc()"/>
           <div class="hint">Example: 46.0</div>
         </div>
-        <div>
-          <div class="val-label">VALUATION</div>
+        <div class="val-col">
+          <div class="val-label">Valuation</div>
           <div class="val-num" id="goldVal">--</div>
           <div class="val-change" id="goldChange">--</div>
+          <div class="invested-wrap">
+            <label class="invested-toggle">
+              <input type="checkbox" id="goldInvestedEnabled" onchange="toggleInvested('gold')">
+              <span>Track Invested Amount</span>
+            </label>
+            <div id="goldInvestedRow" class="invested-input-row">
+              <div class="invested-label">Invested Amount (&#8377;)</div>
+              <input type="number" id="goldInvestedAmount" class="invested-input" min="1" step="1" inputmode="decimal" placeholder="Invested Amount (&#8377;)" oninput="recalc()">
+              <div id="goldInvestedError" class="invested-error">Enter an invested amount greater than &#8377;0.</div>
+              <div id="goldInvestedSummary" class="invested-summary"></div>
+            </div>
+            <div id="goldReturns" class="returns-row hidden"></div>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="card silver-card">
-      <div class="metal-label" style="color:#7a9ab8">SILVER / G</div>
+      <div class="metal-label" style="color:#7a9ab8">Silver / g</div>
       <div class="metal-price-row">
-        <div class="metal-price silver-col" id="silverPrice">₹ --</div>
+        <div class="metal-price silver-col" id="silverPrice">&#8377; --</div>
         <div class="rate-diff" id="silverRateDiff">--</div>
       </div>
       <div class="metal-bottom">
         <div>
-          <div class="holdings-label">HOLDINGS (G)</div>
+          <div class="holdings-label">Holdings (g)</div>
           <input type="number" id="silverHoldings" value="714" min="0" step="0.1" inputmode="decimal" oninput="recalc()"/>
           <div class="hint">Example: 714.0</div>
         </div>
-        <div>
-          <div class="val-label">VALUATION</div>
+        <div class="val-col">
+          <div class="val-label">Valuation</div>
           <div class="val-num" id="silverVal">--</div>
           <div class="val-change" id="silverChange">--</div>
+          <div class="invested-wrap">
+            <label class="invested-toggle">
+              <input type="checkbox" id="silverInvestedEnabled" onchange="toggleInvested('silver')">
+              <span>Track Invested Amount</span>
+            </label>
+            <div id="silverInvestedRow" class="invested-input-row">
+              <div class="invested-label">Invested Amount (&#8377;)</div>
+              <input type="number" id="silverInvestedAmount" class="invested-input" min="1" step="1" inputmode="decimal" placeholder="Invested Amount (&#8377;)" oninput="recalc()">
+              <div id="silverInvestedError" class="invested-error">Enter an invested amount greater than &#8377;0.</div>
+              <div id="silverInvestedSummary" class="invested-summary"></div>
+            </div>
+            <div id="silverReturns" class="returns-row hidden"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -360,21 +420,68 @@
   const loadingIds = ['totalVal', 'totalChange', 'prevClose', 'goldPrice', 'silverPrice', 'goldVal', 'silverVal', 'gsrRatio', 'gsrDev', 'gsrSignalText', 'rateVal', 'rateTrend', 'rateBias'];
 
   const byId = (id) => document.getElementById(id);
-  const fmt = (n) => `₹ ${Math.round(Number(n) || 0).toLocaleString('en-IN')}`;
+  const fmt = (n) => `\u20B9 ${Math.round(Number(n) || 0).toLocaleString('en-IN')}`;
 
   function setMode(nextMode) {
     mode = nextMode;
     byId('buyBtn').classList.toggle('active', nextMode === 'buy');
     byId('sellBtn').classList.toggle('active', nextMode === 'sell');
     byId('modeHelp').innerText = nextMode === 'buy'
-      ? 'BUY mode uses spot price.'
-      : 'SELL mode applies a 3% spread (97% of spot).';
+      ? 'Buy mode uses spot rates.'
+      : 'Sell mode applies a 3% spread (97% of spot).';
     recalc();
+  }
+
+  function toggleInvested(metal) {
+    const enabled = byId(`${metal}InvestedEnabled`).checked;
+    const row = byId(`${metal}InvestedRow`);
+    const returns = byId(`${metal}Returns`);
+    const error = byId(`${metal}InvestedError`);
+    row.classList.toggle('active', enabled);
+    if (!enabled) {
+      returns.classList.add('hidden');
+      error.classList.remove('active');
+    }
+    localStorage.setItem(`${metal}InvestedEnabled`, enabled ? '1' : '0');
+    recalc();
+  }
+
+  function updateInvestedReturns(metal, currentValue) {
+    const enabled = byId(`${metal}InvestedEnabled`).checked;
+    const returns = byId(`${metal}Returns`);
+    const error = byId(`${metal}InvestedError`);
+    const summary = byId(`${metal}InvestedSummary`);
+    const raw = (byId(`${metal}InvestedAmount`).value || '').trim();
+    const invested = Number.parseFloat(raw);
+    localStorage.setItem(`${metal}InvestedAmount`, raw);
+
+    if (!enabled) {
+      returns.classList.add('hidden');
+      error.classList.remove('active');
+      summary.textContent = '';
+      return;
+    }
+
+    if (!Number.isFinite(invested) || invested <= 0) {
+      error.classList.add('active');
+      returns.classList.add('hidden');
+      summary.textContent = '';
+      return;
+    }
+
+    error.classList.remove('active');
+    summary.textContent = `Invested Amount: ${fmt(invested)}`;
+    const pnl = currentValue - invested;
+    const ret = (pnl / invested) * 100;
+    const cls = pnl >= 0 ? 'trend-up' : 'trend-down';
+    const sign = pnl >= 0 ? '+' : '-';
+    returns.className = 'returns-row';
+    returns.innerHTML = `Profit/Loss: <span class="${cls}">${sign}${fmt(Math.abs(pnl))}</span><br>Return (%): <span class="${cls}">${sign}${Math.abs(ret).toFixed(2)}%</span>`;
   }
 
   function setLoading(isLoading) {
     byId('refreshBtn').disabled = isLoading;
-    byId('refreshBtn').innerText = isLoading ? 'REFRESHING...' : 'REFRESH RATES';
+    byId('refreshBtn').innerText = isLoading ? 'REFRESHING RATES...' : 'REFRESH RATES';
     loadingIds.forEach((id) => {
       const el = byId(id);
       if (el) el.classList.toggle('skeleton', isLoading);
@@ -391,11 +498,11 @@
   }
 
   function setSourceChip(source) {
-    byId('sourceChip').innerText = source === 'live' ? 'Source: Live' : (source === 'fallback' ? 'Source: Fallback' : 'Source: --');
+    byId('sourceChip').innerText = source === 'live' ? 'Data Source: Live' : (source === 'fallback' ? 'Data Source: Fallback' : 'Data Source: --');
   }
 
   function arrow(up) {
-    return `<span style="color:${up ? '#00e6a0' : '#ff5c5c'}">${up ? '▲' : '▼'}</span>`;
+    return `<span style="color:${up ? '#00e6a0' : '#ff5c5c'}">${up ? '\u25B2' : '\u25BC'}</span>`;
   }
 
   function gsrSignal(ratio, strategy) {
@@ -407,18 +514,18 @@
         'BALANCED': { btn: 'HOLD', color: '#aaaaaa' }
       };
       const resolved = map[advice] || map.BALANCED;
-      return { text: strategy.explanation || 'Monitor closely.', btn: resolved.btn, color: resolved.color };
+      return { text: strategy.explanation || 'Maintain a balanced allocation.', btn: resolved.btn, color: resolved.color };
     }
 
-    if (ratio < 50) return { text: 'Gold is undervalued. Focus on stability.', btn: 'BUY GOLD', color: '#ffa040' };
-    if (ratio > 80) return { text: 'Silver is undervalued. High upside potential.', btn: 'BUY SILVER', color: '#c8dff0' };
-    return { text: 'Ratio is neutral. Monitor closely.', btn: 'HOLD', color: '#aaaaaa' };
+    if (ratio < 50) return { text: 'Gold appears undervalued. Consider gradual accumulation.', btn: 'BUY GOLD', color: '#ffa040' };
+    if (ratio > 80) return { text: 'Silver appears undervalued. Consider gradual accumulation.', btn: 'BUY SILVER', color: '#c8dff0' };
+    return { text: 'The ratio is neutral. Maintain a balanced allocation.', btn: 'HOLD', color: '#aaaaaa' };
   }
 
   function rateSignal(rate, trend) {
-    if (rate < 0 && trend === 'falling') return { label: 'Strong Buy Both', color: '#00e6a0', bg: 'rgba(0,230,160,.08)', border: 'rgba(0,230,160,.3)' };
-    if (rate < 0 && trend === 'rising') return { label: 'Favour Silver', color: '#f0c040', bg: 'rgba(240,192,64,.08)', border: 'rgba(240,192,64,.3)' };
-    if (rate >= 0 && trend === 'rising') return { label: 'Reduce Both', color: '#ff5c5c', bg: 'rgba(255,92,92,.08)', border: 'rgba(255,92,92,.3)' };
+    if (rate < 0 && trend === 'falling') return { label: 'Strong Buy (Both)', color: '#00e6a0', bg: 'rgba(0,230,160,.08)', border: 'rgba(0,230,160,.3)' };
+    if (rate < 0 && trend === 'rising') return { label: 'Favor Silver', color: '#f0c040', bg: 'rgba(240,192,64,.08)', border: 'rgba(240,192,64,.3)' };
+    if (rate >= 0 && trend === 'rising') return { label: 'Reduce Exposure', color: '#ff5c5c', bg: 'rgba(255,92,92,.08)', border: 'rgba(255,92,92,.3)' };
     return { label: 'Accumulate Gold', color: '#ffa040', bg: 'rgba(255,160,64,.08)', border: 'rgba(255,160,64,.3)' };
   }
 
@@ -460,10 +567,12 @@
     const prevSp = mode === 'buy' ? data.silver.prevClose : (data.silver.prevClose * 0.97);
     const goldPerGramDiff = gp - prevGp;
     const silverPerGramDiff = sp - prevSp;
-    byId('goldRateDiff').innerHTML = `${arrow(goldPerGramDiff >= 0)} <span class="${goldPerGramDiff >= 0 ? 'trend-up' : 'trend-down'}">${fmt(Math.abs(goldPerGramDiff))} /g</span>`;
-    byId('silverRateDiff').innerHTML = `${arrow(silverPerGramDiff >= 0)} <span class="${silverPerGramDiff >= 0 ? 'trend-up' : 'trend-down'}">${fmt(Math.abs(silverPerGramDiff))} /g</span>`;
+    byId('goldRateDiff').innerHTML = `${arrow(goldPerGramDiff >= 0)} <span class="${goldPerGramDiff >= 0 ? 'trend-up' : 'trend-down'}">${fmt(Math.abs(goldPerGramDiff))} / g</span>`;
+    byId('silverRateDiff').innerHTML = `${arrow(silverPerGramDiff >= 0)} <span class="${silverPerGramDiff >= 0 ? 'trend-up' : 'trend-down'}">${fmt(Math.abs(silverPerGramDiff))} / g</span>`;
     byId('goldChange').innerHTML = `${arrow(goldDelta >= 0)} <span class="${goldDelta >= 0 ? 'green' : 'red'}">${fmt(Math.abs(goldDelta))}</span>`;
     byId('silverChange').innerHTML = `${arrow(silverDelta >= 0)} <span class="${silverDelta >= 0 ? 'green' : 'red'}">${fmt(Math.abs(silverDelta))}</span>`;
+    updateInvestedReturns('gold', gv);
+    updateInvestedReturns('silver', sv);
 
     const ratio = Number(data.ratio?.current) || (gp / sp);
     const dev = Number(data.ratio?.deviation ?? (((ratio - TEN_YEAR_AVG) / TEN_YEAR_AVG) * 100));
@@ -481,7 +590,7 @@
     const rs = rateSignal(REAL_RATE, REAL_TREND);
     byId('rateVal').textContent = `${REAL_RATE > 0 ? '+' : ''}${REAL_RATE}%`;
     byId('rateVal').style.color = REAL_RATE < 0 ? '#00e6a0' : '#ff5c5c';
-    byId('rateTrend').textContent = REAL_TREND === 'falling' ? '↘ FALLING' : '↗ RISING';
+    byId('rateTrend').textContent = REAL_TREND === 'falling' ? '\u2198 Falling' : '\u2197 Rising';
     byId('rateTrend').style.color = REAL_TREND === 'falling' ? '#00e6a0' : '#ff5c5c';
     byId('rateBias').textContent = REAL_RATE < 0 ? 'BULLISH' : 'BEARISH';
     byId('rateBias').style.color = REAL_RATE < 0 ? '#00e6a0' : '#ff5c5c';
@@ -491,10 +600,10 @@
       : 'linear-gradient(90deg,#7c3aed,#ff5c5c)';
 
     const matrix = [
-      { rate: 'Negative & falling', signal: 'Strong Buy Both', active: REAL_RATE < 0 && REAL_TREND === 'falling', color: '#00e6a0' },
-      { rate: 'Negative & rising', signal: 'Favour Silver', active: REAL_RATE < 0 && REAL_TREND === 'rising', color: '#f0c040' },
+      { rate: 'Negative & falling', signal: 'Strong Buy (Both)', active: REAL_RATE < 0 && REAL_TREND === 'falling', color: '#00e6a0' },
+      { rate: 'Negative & rising', signal: 'Favor Silver', active: REAL_RATE < 0 && REAL_TREND === 'rising', color: '#f0c040' },
       { rate: 'Positive & falling', signal: 'Accumulate Gold', active: REAL_RATE >= 0 && REAL_TREND === 'falling', color: '#ffa040' },
-      { rate: 'Positive & rising', signal: 'Reduce Both', active: REAL_RATE >= 0 && REAL_TREND === 'rising', color: '#ff5c5c' }
+      { rate: 'Positive & rising', signal: 'Reduce Exposure', active: REAL_RATE >= 0 && REAL_TREND === 'rising', color: '#ff5c5c' }
     ];
 
     byId('rateMatrix').innerHTML = matrix.map((m) => `
@@ -532,8 +641,15 @@
   window.onload = () => {
     byId('goldHoldings').value = localStorage.getItem('gw') || '46';
     byId('silverHoldings').value = localStorage.getItem('sw') || '714';
+    byId('goldInvestedEnabled').checked = localStorage.getItem('goldInvestedEnabled') === '1';
+    byId('silverInvestedEnabled').checked = localStorage.getItem('silverInvestedEnabled') === '1';
+    byId('goldInvestedAmount').value = localStorage.getItem('goldInvestedAmount') || '';
+    byId('silverInvestedAmount').value = localStorage.getItem('silverInvestedAmount') || '';
+    toggleInvested('gold');
+    toggleInvested('silver');
     refreshRates();
   };
 </script>
 </body>
 </html>
+

@@ -32,20 +32,20 @@ const buildStrategy = (ratioValue) => {
     if (ratioValue < 60) {
         return {
             advice: 'BUY GOLD',
-            explanation: 'Gold appears undervalued at current levels, making this a favorable point to accumulate steadily.'
+            explanation: 'Gold appears undervalued. Consider gradual accumulation.'
         };
     }
 
     if (ratioValue > 80) {
         return {
             advice: 'BUY SILVER',
-            explanation: 'Silver looks relatively undervalued versus gold, so this zone favors gradual silver accumulation.'
+            explanation: 'Silver appears undervalued. Consider gradual accumulation.'
         };
     }
 
     return {
         advice: 'BALANCED',
-        explanation: 'The ratio is near its historical middle range, so maintaining a balanced allocation is reasonable.'
+        explanation: 'The ratio is neutral. Maintain a balanced allocation.'
     };
 };
 
