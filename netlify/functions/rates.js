@@ -54,20 +54,20 @@ const buildStrategy = (ratioValue) => {
     if (ratioValue < 60) {
         return {
             advice: 'BUY GOLD',
-            explanation: 'Gold appears undervalued. Consider gradual accumulation.'
+            explanation: 'Gold looks cheaper now. You can buy slowly.'
         };
     }
 
     if (ratioValue > 80) {
         return {
             advice: 'BUY SILVER',
-            explanation: 'Silver appears undervalued. Consider gradual accumulation.'
+            explanation: 'Silver looks cheaper now. You can buy slowly.'
         };
     }
 
     return {
         advice: 'BALANCED',
-        explanation: 'The ratio is neutral. Maintain a balanced allocation.'
+        explanation: 'Prices look balanced now. Hold or buy both slowly.'
     };
 };
 

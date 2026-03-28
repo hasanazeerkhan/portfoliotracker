@@ -592,9 +592,9 @@
       return { text: strategy.explanation || 'Maintain a balanced allocation.', btn: resolved.btn, color: resolved.color, textColor: resolved.text };
     }
 
-    if (ratio < 50) return { text: 'Gold appears undervalued. Consider gradual accumulation.', btn: 'BUY GOLD', color: '#ffa040', textColor: '#10131a' };
-    if (ratio > 80) return { text: 'Silver appears undervalued. Consider gradual accumulation.', btn: 'BUY SILVER', color: '#c8dff0', textColor: '#10131a' };
-    return { text: 'The ratio is neutral. Maintain a balanced allocation.', btn: 'HOLD', color: '#aaaaaa', textColor: '#10131a' };
+    if (ratio < 50) return { text: 'Gold looks cheaper now. You can buy slowly.', btn: 'BUY GOLD', color: '#ffa040', textColor: '#10131a' };
+    if (ratio > 80) return { text: 'Silver looks cheaper now. You can buy slowly.', btn: 'BUY SILVER', color: '#c8dff0', textColor: '#10131a' };
+    return { text: 'Prices look balanced now. Hold or buy both slowly.', btn: 'HOLD', color: '#aaaaaa', textColor: '#10131a' };
   }
 
   function recalc() {
