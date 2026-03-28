@@ -16,6 +16,28 @@ const numberFromText = (value) => {
     return Number.isFinite(parsed) ? parsed : null;
 };
 
+const normalizePerGram = (rawPrice, referencePerGram) => {
+    if (!Number.isFinite(rawPrice) || rawPrice <= 0) return null;
+    if (!Number.isFinite(referencePerGram) || referencePerGram <= 0) {
+        return Number(rawPrice.toFixed(2));
+    }
+
+    let best = rawPrice;
+    let bestScore = Number.POSITIVE_INFINITY;
+
+    for (let shift = -4; shift <= 6; shift += 1) {
+        const candidate = rawPrice * Math.pow(10, shift);
+        if (!(candidate > 0)) continue;
+        const score = Math.abs(Math.log10(candidate / referencePerGram));
+        if (score < bestScore) {
+            bestScore = score;
+            best = candidate;
+        }
+    }
+
+    return Number(best.toFixed(2));
+};
+
 const buildRatio = (goldPrice, silverPrice) => {
     if (!(goldPrice > 0) || !(silverPrice > 0)) {
         return { current: '0.00', deviation: '0.0' };
@@ -73,7 +95,7 @@ const extractDateFromText = (text) => {
     return null;
 };
 
-const parseHistoricalRates = ($) => {
+const parseHistoricalRates = ($, referencePerGram) => {
     const byDate = new Map();
 
     $('table tr').each((_, tr) => {
@@ -93,7 +115,10 @@ const parseHistoricalRates = ($) => {
             }
         }
         if (price !== null && !byDate.has(date)) {
-            byDate.set(date, Number(price.toFixed(2)));
+            const normalized = normalizePerGram(price, referencePerGram);
+            if (normalized !== null) {
+                byDate.set(date, normalized);
+            }
         }
     });
 
@@ -105,7 +130,7 @@ const parseHistoricalRates = ($) => {
 
 const buildHistory7 = (goldHistory, silverHistory) => {
     const silverMap = new Map(silverHistory.map((d) => [d.date, d.price]));
-    const merged = goldHistory
+    return goldHistory
         .filter((d) => silverMap.has(d.date))
         .map((d) => ({
             date: d.date,
@@ -114,8 +139,6 @@ const buildHistory7 = (goldHistory, silverHistory) => {
         }))
         .sort((a, b) => a.date.localeCompare(b.date))
         .slice(-7);
-
-    return merged.length === 7 ? merged : [];
 };
 
 const buildPayload = (gold, silver, source, history7 = [], historyIsExact = false, error = null) => {
@@ -170,10 +193,10 @@ exports.handler = async (event, context) => {
         const $s = cheerio.load(sRes.data);
         const gold = parseRates($g);
         const silver = parseRates($s);
-        const goldHistory = parseHistoricalRates($g);
-        const silverHistory = parseHistoricalRates($s);
+        const goldHistory = parseHistoricalRates($g, gold.price);
+        const silverHistory = parseHistoricalRates($s, silver.price);
         const history7 = buildHistory7(goldHistory, silverHistory);
-        const payload = buildPayload(gold, silver, 'live', history7, history7.length === 7);
+        const payload = buildPayload(gold, silver, 'live', history7, history7.length >= 4);
 
         return {
             statusCode: 200,

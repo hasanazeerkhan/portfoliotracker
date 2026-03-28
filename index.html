@@ -4,65 +4,77 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WealthControl</title>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0b0f1b;
-      --card: #151c2c;
-      --border: #24304a;
-      --text: #e8e8e8;
-      --muted: #78819a;
-      --dim: #5e6679;
-      --purple: #7c3aed;
-      --purple-dark: #5b21b6;
-      --gain: #00e6a0;
-      --loss: #ff5c5c;
-      --gold: #ffd700;
-      --silver: #c8dff0;
-      --amber: #b8860b;
+      --bg: #06080d;
+      --card: #0f141f;
+      --card-soft: #131a28;
+      --border: #25314a;
+      --text: #ecf2ff;
+      --muted: #98a6bf;
+      --dim: #76839b;
+      --purple: #17a673;
+      --purple-dark: #0f8c5f;
+      --gain: #0f9f6e;
+      --loss: #d94f4f;
+      --gold: #cc9200;
+      --silver: #5d7691;
+      --amber: #b17800;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --shadow-main: 0 14px 32px rgba(0, 0, 0, 0.38);
+      --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.3);
       --fs-label: 0.78rem;
       --fs-small: 0.86rem;
       --fs-body: 0.95rem;
     }
 
     body {
-      background: radial-gradient(1200px 700px at 50% -10%, #121a2d 0%, var(--bg) 60%);
+      background:
+        radial-gradient(1000px 500px at 50% -45%, #12182a 0%, transparent 58%),
+        radial-gradient(760px 420px at -10% 25%, rgba(255, 204, 78, 0.06), transparent 60%),
+        radial-gradient(760px 420px at 110% 25%, rgba(196, 216, 238, 0.08), transparent 60%),
+        linear-gradient(180deg, #05070c 0%, #05070c 100%);
       color: var(--text);
       font-family: 'IBM Plex Mono', monospace;
       font-variant-numeric: tabular-nums;
       min-height: 100vh;
-      padding: 28px 16px;
+      padding: 30px 16px 36px;
     }
 
-    .wrap { max-width: 1160px; margin: 0 auto; }
+    .wrap { max-width: 1180px; margin: 0 auto; }
 
     .last-updated { font-size: var(--fs-small); color: var(--dim); margin-top: 6px; letter-spacing: 0.04em; }
-    .location { font-size: 0.82rem; color: #b4bbcb; letter-spacing: 0.08em; margin-bottom: 2px; }
+    .location { font-size: 0.82rem; color: #9aa8c0; letter-spacing: 0.08em; margin-bottom: 2px; }
 
     .card {
-      background: linear-gradient(145deg, #161f31, #131a29);
-      border-radius: 20px;
-      padding: clamp(16px, 2vw, 28px);
+      background: linear-gradient(180deg, #121a2a, #0f1724);
+      border-radius: var(--radius-lg);
+      padding: clamp(18px, 2vw, 30px);
       border: 1px solid var(--border);
-      margin-bottom: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-main);
+      position: relative;
+      overflow: hidden;
     }
 
     .gold-card {
       background:
-        radial-gradient(130% 95% at -10% -30%, rgba(255, 215, 0, 0.34), rgba(255, 215, 0, 0.14) 42%, rgba(255, 215, 0, 0.03) 72%),
-        linear-gradient(145deg, #2b220f, #1a2131 72%);
-      border-color: #8a6719;
+        radial-gradient(115% 95% at -10% -30%, rgba(252, 198, 60, 0.42), rgba(252, 198, 60, 0.16) 44%, rgba(252, 198, 60, 0.02) 70%),
+        linear-gradient(180deg, #2a2110, #181f2e 78%);
+      border-color: #9b7426;
+      box-shadow: inset 0 1px 0 rgba(255, 226, 149, 0.12), var(--shadow-main);
     }
     .silver-card {
       background:
-        radial-gradient(130% 95% at -10% -30%, rgba(218, 228, 238, 0.42), rgba(194, 208, 224, 0.2) 42%, rgba(194, 208, 224, 0.06) 72%),
-        linear-gradient(145deg, #1d2734, #1a2131 72%);
-      border-color: #69839c;
+        radial-gradient(115% 95% at -10% -30%, rgba(201, 220, 240, 0.38), rgba(201, 220, 240, 0.14) 44%, rgba(201, 220, 240, 0.02) 70%),
+        linear-gradient(180deg, #1c2738, #171f30 78%);
+      border-color: #6f8aa7;
+      box-shadow: inset 0 1px 0 rgba(225, 238, 255, 0.12), var(--shadow-main);
     }
     .gsr-card { border-left: 4px solid var(--amber); }
-    .rate-card { border-left: 4px solid var(--gain); }
 
     .error-banner {
       display: none;
@@ -79,134 +91,192 @@
     .error-banner.visible { display: flex; }
 
     .port-inner { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-    .port-title { font-size: var(--fs-label); color: #98a0b3; letter-spacing: .12em; }
-    .port-val { font-size: clamp(2rem, 4.5vw, 3.6rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; margin: 10px 0; }
-    .port-change { font-size: clamp(1rem, 1.9vw, 1.35rem); margin-top: 4px; }
+    .port-title { font-size: var(--fs-label); color: #9aa8c0; letter-spacing: .12em; text-transform: uppercase; }
+    .port-val {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(2rem, 4.5vw, 3.55rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.06;
+      margin: 12px 0 8px;
+      text-shadow: none;
+    }
+    .port-change { font-size: clamp(1rem, 1.9vw, 1.3rem); margin-top: 4px; font-weight: 600; }
     .port-prev { font-size: var(--fs-body); color: var(--dim); margin-top: 4px; }
     .as-of { font-size: var(--fs-label); color: var(--muted); margin-top: 8px; }
-    .port-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .port-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; min-width: 300px; }
 
     .btn-purple {
-      background: var(--purple); color: #fff; border: none; border-radius: 14px;
-      padding: 12px 18px; font-family: inherit; font-size: clamp(0.9rem, 1.2vw, 1rem); font-weight: 700;
-      letter-spacing: 0.08em; cursor: pointer; transition: background 0.2s;
+      background: var(--purple);
+      color: #fff; border: none; border-radius: 13px;
+      padding: 10px 16px; font-family: 'Sora', sans-serif; font-size: clamp(0.84rem, 1.05vw, 0.92rem); font-weight: 600;
+      letter-spacing: 0.08em; cursor: pointer; transition: transform 0.2s, background 0.2s;
+      box-shadow: var(--shadow-soft);
     }
-    .btn-purple:hover { background: var(--purple-dark); }
+    .btn-purple:hover { background: var(--purple-dark); transform: translateY(-1px); }
     .btn-purple:disabled { opacity: .65; cursor: progress; }
 
     .btn-row { display: flex; gap: 10px; }
     .btn-outline {
-      background: transparent; border: 2px solid #323b51; color: #d0d4df;
-      border-radius: 12px; padding: 10px 16px; font-family: inherit;
-      font-size: clamp(0.85rem, 1.15vw, 0.95rem); font-weight: 600; letter-spacing: 0.08em; cursor: pointer;
+      background: rgba(255,255,255,0.02); border: 1px solid #3d4a63; color: #d3dbeb;
+      border-radius: 12px; padding: 10px 14px; font-family: 'Sora', sans-serif;
+      font-size: clamp(0.82rem, 1.05vw, 0.9rem); font-weight: 600; letter-spacing: 0.08em; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
     }
-    .btn-outline.active { border-color: #f5f7fa; color: #f5f7fa; }
-    .source-chip { font-size: var(--fs-label); color: var(--muted); border: 1px solid #31384a; border-radius: 999px; padding: 4px 10px; }
+    .btn-outline.active { border-color: #18a977; color: #dff7ee; background: rgba(24,169,119,0.18); }
+    .source-chip { font-size: var(--fs-label); color: #9aa8c0; border: 1px solid #3a4862; border-radius: 999px; padding: 4px 10px; background: rgba(8,12,21,0.35); }
     .retry-btn { font-size: 0.72rem; padding: 7px 12px; }
 
-    .metals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-    .metal-label { font-size: var(--fs-label); letter-spacing: 0.12em; margin-bottom: 12px; }
-    .metal-price-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; min-height: 48px; }
-    .metal-price { font-size: clamp(1.8rem, 3.5vw, 3rem); font-weight: 700; margin-bottom: 0; }
-    .metal-bottom { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+    .metals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+    .metal-label { font-size: var(--fs-label); letter-spacing: 0.12em; margin-bottom: 14px; text-transform: uppercase; }
+    .metal-price-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin-bottom: 16px; min-height: 58px; }
+    .metal-price {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(2rem, 3.8vw, 3.15rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0;
+      line-height: 1.05;
+    }
+    .metal-bottom { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }
     .val-col {
-      min-width: 248px;
+      min-width: 266px;
       text-align: right;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 2px;
+      gap: 3px;
     }
-    .holdings-label, .val-label { font-size: var(--fs-label); color: #8d95a9; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .holdings-label, .val-label { font-size: var(--fs-label); color: #95a3bc; letter-spacing: 0.1em; margin-bottom: 8px; text-transform: uppercase; }
     .val-label { text-align:right; }
-    .val-num { font-size: clamp(1.45rem, 2.8vw, 2.3rem); font-weight: 700; text-align: right; line-height: 1.1; min-height: 40px; }
-    .val-change { font-size: clamp(0.9rem, 1.45vw, 1rem); margin-top: 4px; text-align: right; min-height: 22px; }
-    .hint { font-size: 0.68rem; color: var(--dim); margin-top: 6px; }
-    .invested-wrap { margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); width: 100%; }
-    .invested-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #a8b0c4; cursor: pointer; }
+    .val-num {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.62rem, 2.85vw, 2.35rem);
+      font-weight: 700;
+      text-align: right;
+      line-height: 1.1;
+      min-height: 40px;
+      letter-spacing: -0.02em;
+    }
+    .val-change { font-size: clamp(0.92rem, 1.45vw, 1rem); margin-top: 4px; text-align: right; min-height: 22px; font-weight: 600; }
+    .hint { font-size: 0.69rem; color: #73819b; margin-top: 7px; }
+    .invested-wrap { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; }
+    .invested-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; color: #9aa8c0; cursor: pointer; }
     .invested-toggle input { accent-color: #8b5cf6; }
     .invested-input-row { margin-top: 6px; display: none; }
     .invested-input-row.active { display: block; }
-    .invested-label { font-size: 0.66rem; color: #9aa3b8; letter-spacing: 0.08em; margin-bottom: 4px; }
+    .invested-label { font-size: 0.68rem; color: #95a3bc; letter-spacing: 0.08em; margin-bottom: 5px; }
     .invested-input {
       width: 100%;
       max-width: 100%;
-      background: #0e1320;
-      border: 1px solid #2d3650;
+      background: #0d1523;
+      border: 1px solid #33415c;
       border-radius: 10px;
       color: var(--text);
-      font-family: inherit;
-      font-size: 0.9rem;
-      padding: 8px 10px;
+      font-family: 'Sora', sans-serif;
+      font-size: 0.94rem;
+      padding: 10px 11px;
       outline: none;
     }
     .invested-input:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
     .invested-error { color: var(--loss); font-size: 0.68rem; margin-top: 4px; display: none; }
     .invested-error.active { display: block; }
-    .invested-summary { margin-top: 4px; font-size: 0.68rem; color: #9aa3b8; }
-    .returns-row { margin-top: 8px; font-size: 0.74rem; line-height: 1.45; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 6px 8px; width: 100%; }
+    .invested-summary { margin-top: 6px; font-size: 0.7rem; color: #95a3bc; }
+    .returns-row {
+      margin-top: 9px;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 10px;
+      padding: 8px 10px;
+      width: 100%;
+    }
     .returns-row.hidden { display: none; }
 
     input[type=number] {
-      background: #0e1320;
-      border: 1px solid #2d3650;
+      background: #0d1523;
+      border: 1px solid #33415c;
       border-radius: 12px;
       color: var(--text);
-      font-family: inherit;
-      font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.25rem, 2.2vw, 1.6rem);
       font-weight: 600;
-      padding: 10px 12px;
-      width: 140px;
+      letter-spacing: -0.01em;
+      padding: 11px 12px;
+      width: 146px;
       outline: none;
     }
     input[type=number]:focus-visible, button:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
 
-    .section-title { font-size: clamp(0.95rem, 1.4vw, 1.08rem); font-weight: 700; letter-spacing: 0.08em; margin-bottom: 16px; line-height: 1.5; }
+    .section-title {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(0.94rem, 1.35vw, 1.05rem);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+      line-height: 1.45;
+    }
     .section-note { color: var(--muted); font-weight: 400; }
 
-    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 18px; }
-    .stat-label { font-size: var(--fs-label); color: #8c94a8; letter-spacing: 0.1em; margin-bottom: 6px; }
-    .stat-val { font-size: clamp(1.6rem, 3.2vw, 2.6rem); font-weight: 700; }
-    #rateBias { font-size: clamp(1.2rem, 2.2vw, 1.7rem); margin-top: 6px; }
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 16px; }
+    .stat-label { font-size: var(--fs-label); color: #95a3bc; letter-spacing: 0.1em; margin-bottom: 6px; }
+    .stat-val { font-family: 'Sora', sans-serif; font-size: clamp(1.6rem, 3.2vw, 2.6rem); font-weight: 700; letter-spacing: -0.02em; }
     .stat-note { font-size: var(--fs-body); color: var(--dim); margin-top: 4px; }
 
     .bar-labels { display: flex; justify-content: space-between; font-size: var(--fs-label); color: var(--dim); margin-bottom: 7px; gap: 8px; }
-    .bar-track { height: 10px; border-radius: 6px; background: #232b40; overflow: hidden; margin-bottom: 16px; }
+    .bar-track { height: 10px; border-radius: 6px; background: #212b3d; overflow: hidden; margin-bottom: 16px; }
     .bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; }
 
     .signal-banner {
       display: flex; justify-content: space-between; align-items: center;
-      background: rgba(255,255,255,0.03); border-radius: 12px; padding: 14px 16px;
-      border: 1px solid transparent;
+      background: rgba(255,255,255,0.03);
+      border-radius: 14px; padding: 15px 16px;
+      border: 1px solid rgba(255,255,255,0.1);
       gap: 12px;
     }
     .signal-tag { font-size: var(--fs-label); letter-spacing: 0.12em; margin-bottom: 6px; }
-    .signal-text { font-size: clamp(0.96rem, 1.5vw, 1.2rem); font-weight: 600; line-height: 1.3; }
+    .signal-text { font-family: 'Sora', sans-serif; font-size: clamp(1rem, 1.45vw, 1.25rem); font-weight: 600; line-height: 1.35; }
 
     .btn-signal {
       border: none; border-radius: 12px; padding: 10px 14px;
-      font-family: inherit; font-size: clamp(0.8rem, 1.2vw, 0.95rem); font-weight: 700;
+      font-family: 'Sora', sans-serif; font-size: clamp(0.75rem, 1vw, 0.86rem); font-weight: 600;
       letter-spacing: 0.1em; cursor: pointer;
       white-space: nowrap;
     }
 
-    .matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
-    .matrix-cell { border-radius: 12px; padding: 12px 16px; border: 1px solid #2a3349; }
-    .matrix-cell-label { font-size: var(--fs-label); letter-spacing: 0.08em; margin-bottom: 5px; }
-    .matrix-cell-val { font-size: clamp(0.95rem, 1.8vw, 1.2rem); font-weight: 600; }
 
     .trend-up { color: var(--gain); }
     .trend-down { color: var(--loss); }
-    .rate-diff { font-size: 0.78rem; font-weight: 700; white-space: nowrap; min-height: 20px; display: inline-flex; align-items: center; }
+    .rate-diff {
+      font-size: 0.78rem;
+      font-weight: 700;
+      white-space: nowrap;
+      min-height: 20px;
+      display: inline-flex;
+      align-items: center;
+      background: rgba(12,18,30,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      padding: 4px 10px;
+    }
+    .rates-card { margin-top: -4px; overflow-x: auto; }
+    .rates-table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 0.82rem; }
+    .rates-table th, .rates-table td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: right; }
+    .rates-table th:first-child, .rates-table td:first-child { text-align: left; }
+    .rates-table thead th { color: #9aa8c0; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; font-size: 0.76rem; }
+    .rates-table tbody tr:nth-child(odd) { background: rgba(255,255,255,0.02); }
+    .rates-table tbody tr.gold-row td:first-child { color: #ffd86b; font-weight: 600; }
+    .rates-table tbody tr.silver-row td:first-child { color: #cfe0ee; font-weight: 600; }
+    .rates-table tbody tr:last-child td { border-bottom: none; }
 
     .green { color: var(--gain); }
     .red { color: var(--loss); }
     .gold { color: var(--gold); }
     .silver-col { color: var(--silver); }
-    .teal { color: var(--gain); }
     .amber { color: var(--amber); }
 
-    .footer { text-align: center; margin-top: 20px; font-size: 10px; color: #3b4254; letter-spacing: 0.08em; }
+    .footer { text-align: center; margin-top: 22px; font-size: 10px; color: #7b89a1; letter-spacing: 0.08em; }
 
     .skeleton {
       color: transparent !important;
@@ -228,15 +298,15 @@
     @media(max-width:768px){
       body { padding: 16px 12px; }
       .stats-row { grid-template-columns: 1fr; gap: 12px; }
-      .matrix { grid-template-columns: 1fr; }
       .metal-bottom { flex-direction: column; align-items: flex-start; }
       .val-col { min-width: 100%; text-align: left; align-items: flex-start; }
       .val-label, .val-num, .val-change { text-align: left; }
       .btn-row { display: grid; grid-template-columns: 1fr 1fr; }
       .btn-purple { width: 100%; }
       .signal-banner { flex-direction: column; align-items: flex-start; }
-      input[type=number] { width: 100%; max-width: 180px; }
+      input[type=number] { width: 100%; max-width: 200px; }
       .bar-labels { font-size: 0.72rem; }
+      .rates-table { font-size: 0.78rem; }
     }
 
     @media(max-width:460px){
@@ -287,8 +357,8 @@
       <div class="metal-bottom">
         <div>
           <div class="holdings-label">Holdings (g)</div>
-          <input type="number" id="goldHoldings" value="46" min="0" step="0.1" inputmode="decimal" oninput="recalc()"/>
-          <div class="hint">Example: 46.0</div>
+          <input type="number" id="goldHoldings" min="0" step="0.1" inputmode="decimal" placeholder="0.0" oninput="recalc()"/>
+          <div class="hint">Example: 10.5</div>
         </div>
         <div class="val-col">
           <div class="val-label">Valuation</div>
@@ -301,7 +371,7 @@
             </label>
             <div id="goldInvestedRow" class="invested-input-row">
               <div class="invested-label">Invested Amount (&#8377;)</div>
-              <input type="number" id="goldInvestedAmount" class="invested-input" min="1" step="1" inputmode="decimal" placeholder="Invested Amount (&#8377;)" oninput="recalc()">
+              <input type="number" id="goldInvestedAmount" class="invested-input" min="1" step="0.01" inputmode="decimal" placeholder="Invested Amount (&#8377;)" oninput="recalc()">
               <div id="goldInvestedError" class="invested-error">Enter an invested amount greater than &#8377;0.</div>
               <div id="goldInvestedSummary" class="invested-summary"></div>
             </div>
@@ -320,8 +390,8 @@
       <div class="metal-bottom">
         <div>
           <div class="holdings-label">Holdings (g)</div>
-          <input type="number" id="silverHoldings" value="714" min="0" step="0.1" inputmode="decimal" oninput="recalc()"/>
-          <div class="hint">Example: 714.0</div>
+          <input type="number" id="silverHoldings" min="0" step="0.1" inputmode="decimal" placeholder="0.0" oninput="recalc()"/>
+          <div class="hint">Example: 250.0</div>
         </div>
         <div class="val-col">
           <div class="val-label">Valuation</div>
@@ -334,7 +404,7 @@
             </label>
             <div id="silverInvestedRow" class="invested-input-row">
               <div class="invested-label">Invested Amount (&#8377;)</div>
-              <input type="number" id="silverInvestedAmount" class="invested-input" min="1" step="1" inputmode="decimal" placeholder="Invested Amount (&#8377;)" oninput="recalc()">
+              <input type="number" id="silverInvestedAmount" class="invested-input" min="1" step="0.01" inputmode="decimal" placeholder="Invested Amount (&#8377;)" oninput="recalc()">
               <div id="silverInvestedError" class="invested-error">Enter an invested amount greater than &#8377;0.</div>
               <div id="silverInvestedSummary" class="invested-summary"></div>
             </div>
@@ -343,6 +413,40 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="card rates-card">
+    <div class="section-title" style="margin-bottom:8px;">RATES TABLE</div>
+    <table class="rates-table" aria-label="Gold and silver rates table">
+      <thead>
+        <tr>
+          <th>Metal</th>
+          <th>Current (₹/g)</th>
+          <th>1D Ago (₹/g)</th>
+          <th>2D Ago (₹/g)</th>
+          <th>3D Ago (₹/g)</th>
+          <th>1D Difference (₹/g)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="gold-row">
+          <td>Gold</td>
+          <td id="tblGoldCurrent">--</td>
+          <td id="tblGoldD1">--</td>
+          <td id="tblGoldD2">--</td>
+          <td id="tblGoldD3">--</td>
+          <td id="tblGoldDiff">--</td>
+        </tr>
+        <tr class="silver-row">
+          <td>Silver</td>
+          <td id="tblSilverCurrent">--</td>
+          <td id="tblSilverD1">--</td>
+          <td id="tblSilverD2">--</td>
+          <td id="tblSilverD3">--</td>
+          <td id="tblSilverDiff">--</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <div class="card gsr-card">
@@ -375,52 +479,22 @@
     </div>
   </div>
 
-  <div class="card rate-card">
-    <div class="section-title teal">REAL INTEREST RATE - <span class="section-note">Negative and falling = bullish metals</span></div>
-    <div class="stats-row">
-      <div>
-        <div class="stat-label">REAL RATE</div>
-        <div class="stat-val" id="rateVal">--</div>
-        <div class="stat-note">10Y yield minus CPI.</div>
-      </div>
-      <div>
-        <div class="stat-label">TREND</div>
-        <div class="stat-val" id="rateTrend">--</div>
-        <div class="stat-note">3-month direction.</div>
-      </div>
-      <div>
-        <div class="stat-label">METALS BIAS</div>
-        <div class="stat-val" id="rateBias">--</div>
-        <div class="stat-note">Rate environment.</div>
-      </div>
-    </div>
-    <div class="bar-labels"><span>-3% (bullish)</span><span>0% (neutral)</span><span>+3% (bearish)</span></div>
-    <div class="bar-track"><div class="bar-fill" id="rateBar" style="width:0%"></div></div>
-    <div class="matrix" id="rateMatrix"></div>
-    <div class="signal-banner" id="rateBanner">
-      <div>
-        <div class="signal-tag teal" id="rateBannerTag">RATE SIGNAL</div>
-        <div class="signal-text" id="rateBannerText">--</div>
-      </div>
-      <button class="btn-signal" id="rateBtn" style="background:#00e6a0;color:#10131a">--</button>
-    </div>
-  </div>
-
   <div class="footer">FOR INFORMATIONAL PURPOSES ONLY - NOT FINANCIAL ADVICE</div>
 </div>
 
 <script>
   const TEN_YEAR_AVG = 62.0;
-  const REAL_RATE = -0.3;
-  const REAL_TREND = 'falling';
 
   let data = null;
   let mode = 'buy';
 
-  const loadingIds = ['totalVal', 'totalChange', 'prevClose', 'goldPrice', 'silverPrice', 'goldVal', 'silverVal', 'gsrRatio', 'gsrDev', 'gsrSignalText', 'rateVal', 'rateTrend', 'rateBias'];
+  const loadingIds = ['totalVal', 'totalChange', 'prevClose', 'goldPrice', 'silverPrice', 'goldVal', 'silverVal', 'gsrRatio', 'gsrDev', 'gsrSignalText'];
 
   const byId = (id) => document.getElementById(id);
-  const fmt = (n) => `\u20B9 ${Math.round(Number(n) || 0).toLocaleString('en-IN')}`;
+  const fmt = (n, fractionDigits = 0) => `\u20B9 ${Number(n || 0).toLocaleString('en-IN', {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits
+  })}`;
 
   function setMode(nextMode) {
     mode = nextMode;
@@ -453,7 +527,8 @@
     const summary = byId(`${metal}InvestedSummary`);
     const raw = (byId(`${metal}InvestedAmount`).value || '').trim();
     const invested = Number.parseFloat(raw);
-    localStorage.setItem(`${metal}InvestedAmount`, raw);
+    if (raw === '') localStorage.removeItem(`${metal}InvestedAmount`);
+    else localStorage.setItem(`${metal}InvestedAmount`, raw);
 
     if (!enabled) {
       returns.classList.add('hidden');
@@ -470,13 +545,13 @@
     }
 
     error.classList.remove('active');
-    summary.textContent = `Invested Amount: ${fmt(invested)}`;
+    summary.textContent = `Invested Amount: ${fmt(invested, 2)}`;
     const pnl = currentValue - invested;
     const ret = (pnl / invested) * 100;
     const cls = pnl >= 0 ? 'trend-up' : 'trend-down';
     const sign = pnl >= 0 ? '+' : '-';
     returns.className = 'returns-row';
-    returns.innerHTML = `Profit/Loss: <span class="${cls}">${sign}${fmt(Math.abs(pnl))}</span><br>Return (%): <span class="${cls}">${sign}${Math.abs(ret).toFixed(2)}%</span>`;
+    returns.innerHTML = `Profit/Loss: <span class="${cls}">${sign}${fmt(Math.abs(pnl), 2)}</span><br>Return (%): <span class="${cls}">${sign}${Math.abs(ret).toFixed(2)}%</span>`;
   }
 
   function setLoading(isLoading) {
@@ -509,33 +584,30 @@
     if (strategy && strategy.advice) {
       const advice = strategy.advice;
       const map = {
-        'BUY GOLD': { btn: 'BUY GOLD', color: '#ffa040' },
-        'BUY SILVER': { btn: 'BUY SILVER', color: '#c8dff0' },
-        'BALANCED': { btn: 'HOLD', color: '#aaaaaa' }
+        'BUY GOLD': { btn: 'BUY GOLD', color: '#ffa040', text: '#10131a' },
+        'BUY SILVER': { btn: 'BUY SILVER', color: '#c8dff0', text: '#10131a' },
+        'BALANCED': { btn: 'HOLD', color: '#aaaaaa', text: '#10131a' }
       };
       const resolved = map[advice] || map.BALANCED;
-      return { text: strategy.explanation || 'Maintain a balanced allocation.', btn: resolved.btn, color: resolved.color };
+      return { text: strategy.explanation || 'Maintain a balanced allocation.', btn: resolved.btn, color: resolved.color, textColor: resolved.text };
     }
 
-    if (ratio < 50) return { text: 'Gold appears undervalued. Consider gradual accumulation.', btn: 'BUY GOLD', color: '#ffa040' };
-    if (ratio > 80) return { text: 'Silver appears undervalued. Consider gradual accumulation.', btn: 'BUY SILVER', color: '#c8dff0' };
-    return { text: 'The ratio is neutral. Maintain a balanced allocation.', btn: 'HOLD', color: '#aaaaaa' };
-  }
-
-  function rateSignal(rate, trend) {
-    if (rate < 0 && trend === 'falling') return { label: 'Strong Buy (Both)', color: '#00e6a0', bg: 'rgba(0,230,160,.08)', border: 'rgba(0,230,160,.3)' };
-    if (rate < 0 && trend === 'rising') return { label: 'Favor Silver', color: '#f0c040', bg: 'rgba(240,192,64,.08)', border: 'rgba(240,192,64,.3)' };
-    if (rate >= 0 && trend === 'rising') return { label: 'Reduce Exposure', color: '#ff5c5c', bg: 'rgba(255,92,92,.08)', border: 'rgba(255,92,92,.3)' };
-    return { label: 'Accumulate Gold', color: '#ffa040', bg: 'rgba(255,160,64,.08)', border: 'rgba(255,160,64,.3)' };
+    if (ratio < 50) return { text: 'Gold appears undervalued. Consider gradual accumulation.', btn: 'BUY GOLD', color: '#ffa040', textColor: '#10131a' };
+    if (ratio > 80) return { text: 'Silver appears undervalued. Consider gradual accumulation.', btn: 'BUY SILVER', color: '#c8dff0', textColor: '#10131a' };
+    return { text: 'The ratio is neutral. Maintain a balanced allocation.', btn: 'HOLD', color: '#aaaaaa', textColor: '#10131a' };
   }
 
   function recalc() {
     if (!data) return;
 
-    const gh = Math.max(0, parseFloat(byId('goldHoldings').value) || 0);
-    const sh = Math.max(0, parseFloat(byId('silverHoldings').value) || 0);
-    localStorage.setItem('gw', gh);
-    localStorage.setItem('sw', sh);
+    const goldRaw = (byId('goldHoldings').value || '').trim();
+    const silverRaw = (byId('silverHoldings').value || '').trim();
+    const gh = Math.max(0, parseFloat(goldRaw) || 0);
+    const sh = Math.max(0, parseFloat(silverRaw) || 0);
+    if (goldRaw === '') localStorage.removeItem('gw');
+    else localStorage.setItem('gw', goldRaw);
+    if (silverRaw === '') localStorage.removeItem('sw');
+    else localStorage.setItem('sw', silverRaw);
 
     const gp = mode === 'buy' ? data.gold.price : (data.gold.price * 0.97);
     const sp = mode === 'buy' ? data.silver.price : (data.silver.price * 0.97);
@@ -556,8 +628,8 @@
     const asOfDate = data.date || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' });
     byId('asOf').textContent = `As of ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} | ${asOfDate}`;
 
-    byId('goldPrice').textContent = fmt(gp);
-    byId('silverPrice').textContent = fmt(sp);
+    byId('goldPrice').textContent = fmt(gp, 2);
+    byId('silverPrice').textContent = fmt(sp, 2);
     byId('goldVal').textContent = fmt(gv);
     byId('silverVal').textContent = fmt(sv);
 
@@ -567,12 +639,34 @@
     const prevSp = mode === 'buy' ? data.silver.prevClose : (data.silver.prevClose * 0.97);
     const goldPerGramDiff = gp - prevGp;
     const silverPerGramDiff = sp - prevSp;
-    byId('goldRateDiff').innerHTML = `${arrow(goldPerGramDiff >= 0)} <span class="${goldPerGramDiff >= 0 ? 'trend-up' : 'trend-down'}">${fmt(Math.abs(goldPerGramDiff))} / g</span>`;
-    byId('silverRateDiff').innerHTML = `${arrow(silverPerGramDiff >= 0)} <span class="${silverPerGramDiff >= 0 ? 'trend-up' : 'trend-down'}">${fmt(Math.abs(silverPerGramDiff))} / g</span>`;
+    byId('goldRateDiff').innerHTML = `${arrow(goldPerGramDiff >= 0)} <span class="${goldPerGramDiff >= 0 ? 'trend-up' : 'trend-down'}">${fmt(Math.abs(goldPerGramDiff), 2)} / g</span>`;
+    byId('silverRateDiff').innerHTML = `${arrow(silverPerGramDiff >= 0)} <span class="${silverPerGramDiff >= 0 ? 'trend-up' : 'trend-down'}">${fmt(Math.abs(silverPerGramDiff), 2)} / g</span>`;
     byId('goldChange').innerHTML = `${arrow(goldDelta >= 0)} <span class="${goldDelta >= 0 ? 'green' : 'red'}">${fmt(Math.abs(goldDelta))}</span>`;
     byId('silverChange').innerHTML = `${arrow(silverDelta >= 0)} <span class="${silverDelta >= 0 ? 'green' : 'red'}">${fmt(Math.abs(silverDelta))}</span>`;
     updateInvestedReturns('gold', gv);
     updateInvestedReturns('silver', sv);
+
+    const history = Array.isArray(data.history7) ? data.history7 : [];
+    const day1 = history[history.length - 2];
+    const day2 = history[history.length - 3];
+    const day3 = history[history.length - 4];
+    const modeFactor = mode === 'buy' ? 1 : 0.97;
+
+    const dayValue = (entry, metal) => {
+      if (!entry || typeof entry[metal] !== 'number') return '--';
+      return fmt(entry[metal] * modeFactor, 2);
+    };
+
+    byId('tblGoldCurrent').textContent = fmt(gp, 2);
+    byId('tblGoldD1').textContent = dayValue(day1 || { gold: prevGp / modeFactor }, 'gold');
+    byId('tblGoldD2').textContent = dayValue(day2, 'gold');
+    byId('tblGoldD3').textContent = dayValue(day3, 'gold');
+    byId('tblGoldDiff').innerHTML = `<span class="${goldPerGramDiff >= 0 ? 'trend-up' : 'trend-down'}">${goldPerGramDiff >= 0 ? '+' : '-'}${fmt(Math.abs(goldPerGramDiff), 2)}</span>`;
+    byId('tblSilverCurrent').textContent = fmt(sp, 2);
+    byId('tblSilverD1').textContent = dayValue(day1 || { silver: prevSp / modeFactor }, 'silver');
+    byId('tblSilverD2').textContent = dayValue(day2, 'silver');
+    byId('tblSilverD3').textContent = dayValue(day3, 'silver');
+    byId('tblSilverDiff').innerHTML = `<span class="${silverPerGramDiff >= 0 ? 'trend-up' : 'trend-down'}">${silverPerGramDiff >= 0 ? '+' : '-'}${fmt(Math.abs(silverPerGramDiff), 2)}</span>`;
 
     const ratio = Number(data.ratio?.current) || (gp / sp);
     const dev = Number(data.ratio?.deviation ?? (((ratio - TEN_YEAR_AVG) / TEN_YEAR_AVG) * 100));
@@ -586,38 +680,7 @@
     byId('gsrSignalText').textContent = sig.text;
     byId('gsrBtn').textContent = sig.btn;
     byId('gsrBtn').style.background = sig.color;
-
-    const rs = rateSignal(REAL_RATE, REAL_TREND);
-    byId('rateVal').textContent = `${REAL_RATE > 0 ? '+' : ''}${REAL_RATE}%`;
-    byId('rateVal').style.color = REAL_RATE < 0 ? '#00e6a0' : '#ff5c5c';
-    byId('rateTrend').textContent = REAL_TREND === 'falling' ? '\u2198 Falling' : '\u2197 Rising';
-    byId('rateTrend').style.color = REAL_TREND === 'falling' ? '#00e6a0' : '#ff5c5c';
-    byId('rateBias').textContent = REAL_RATE < 0 ? 'BULLISH' : 'BEARISH';
-    byId('rateBias').style.color = REAL_RATE < 0 ? '#00e6a0' : '#ff5c5c';
-    byId('rateBar').style.width = `${Math.min(Math.max(((REAL_RATE + 3) / 6) * 100, 2), 98)}%`;
-    byId('rateBar').style.background = REAL_RATE < 0
-      ? 'linear-gradient(90deg,#00e6a0,#7c3aed)'
-      : 'linear-gradient(90deg,#7c3aed,#ff5c5c)';
-
-    const matrix = [
-      { rate: 'Negative & falling', signal: 'Strong Buy (Both)', active: REAL_RATE < 0 && REAL_TREND === 'falling', color: '#00e6a0' },
-      { rate: 'Negative & rising', signal: 'Favor Silver', active: REAL_RATE < 0 && REAL_TREND === 'rising', color: '#f0c040' },
-      { rate: 'Positive & falling', signal: 'Accumulate Gold', active: REAL_RATE >= 0 && REAL_TREND === 'falling', color: '#ffa040' },
-      { rate: 'Positive & rising', signal: 'Reduce Exposure', active: REAL_RATE >= 0 && REAL_TREND === 'rising', color: '#ff5c5c' }
-    ];
-
-    byId('rateMatrix').innerHTML = matrix.map((m) => `
-      <div class="matrix-cell" style="background:${m.active ? `${m.color}18` : 'rgba(255,255,255,.02)'};border-color:${m.active ? `${m.color}55` : '#23283a'}">
-        <div class="matrix-cell-label" style="color:${m.active ? m.color : '#666'}">${m.rate.toUpperCase()}</div>
-        <div class="matrix-cell-val" style="color:${m.active ? m.color : '#485064'}">${m.signal}</div>
-      </div>`).join('');
-
-    byId('rateBanner').style.background = rs.bg;
-    byId('rateBanner').style.borderColor = rs.border;
-    byId('rateBannerTag').style.color = rs.color;
-    byId('rateBannerText').textContent = rs.label;
-    byId('rateBtn').textContent = rs.label.toUpperCase();
-    byId('rateBtn').style.background = rs.color;
+    byId('gsrBtn').style.color = sig.textColor || '#10131a';
 
   }
 
@@ -639,8 +702,8 @@
   }
 
   window.onload = () => {
-    byId('goldHoldings').value = localStorage.getItem('gw') || '46';
-    byId('silverHoldings').value = localStorage.getItem('sw') || '714';
+    byId('goldHoldings').value = localStorage.getItem('gw') ?? '';
+    byId('silverHoldings').value = localStorage.getItem('sw') ?? '';
     byId('goldInvestedEnabled').checked = localStorage.getItem('goldInvestedEnabled') === '1';
     byId('silverInvestedEnabled').checked = localStorage.getItem('silverInvestedEnabled') === '1';
     byId('goldInvestedAmount').value = localStorage.getItem('goldInvestedAmount') || '';
