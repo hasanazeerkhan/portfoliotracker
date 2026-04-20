@@ -89,23 +89,164 @@
     .error-banner.visible { display: flex; }
 
     /* ── Portfolio Header ── */
-    .portfolio-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
-    .portfolio-stats { flex: 1; min-width: 240px; }
-    .portfolio-controls { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .portfolio-header {
+      display: grid;
+      grid-template-columns: minmax(320px, 1.05fr) minmax(320px, 0.95fr) minmax(300px, auto);
+      align-items: stretch;
+      gap: 22px;
+    }
+    .portfolio-stats { min-width: 0; }
+    .portfolio-section {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: var(--r-md);
+      padding: 16px 18px;
+      min-height: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .portfolio-middle {
+      min-width: 0;
+      padding-top: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+    .panel-heading {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.25;
+      letter-spacing: 0;
+      text-transform: none;
+      margin: 0 0 14px;
+    }
+    .section-kicker,
+    .stat-label {
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      color: inherit;
+      line-height: inherit;
+      letter-spacing: inherit;
+      text-transform: inherit;
+      margin: inherit;
+    }
+    .portfolio-middle .panel-heading,
+    .portfolio-right .panel-heading {
+      margin-top: 4px;
+    }
+    .alloc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 10px;
+    }
+    .alloc-item {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .alloc-track {
+      width: 100%;
+      height: 14px;
+      border-radius: 999px;
+      overflow: hidden;
+      display: flex;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.06);
+    }
+    .alloc-bar {
+      height: 100%;
+      transition: width 0.4s ease;
+      min-width: 0;
+    }
+    .alloc-bar.gold {
+      background: linear-gradient(90deg, rgba(245,158,11,0.7), rgba(245,158,11,0.9));
+    }
+    .alloc-bar.silver {
+      background: linear-gradient(90deg, rgba(148,163,184,0.75), rgba(148,163,184,0.92));
+    }
+    .alloc-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 14px;
+      margin-top: 10px;
+    }
+    .alloc-detail {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+      line-height: 1.4;
+    }
+    .alloc-detail strong {
+      display: block;
+      margin-top: 3px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+    .portfolio-right {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+      padding-top: 0;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+    .trade-head {
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .controls-kicker { margin: 0; }
+    .trade-location {
+      margin-left: auto;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .control-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .portfolio-controls {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      padding: 0;
+    }
 
-    .stat-block { margin-bottom: 0; }
-    .stat-label { font-size: 0.72rem; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+    .stat-block { margin: 0; padding: 0; }
     .stat-value {
       font-family: 'Outfit', sans-serif;
       font-size: clamp(1.8rem, 4vw, 3rem);
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1.1;
-      margin-bottom: 10px;
+      margin-bottom: 14px;
       word-break: break-word;
     }
-    .stat-change { font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-    .stat-meta { font-size: 0.82rem; color: var(--dim); margin-top: 5px; }
+    .stat-change { font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .stat-meta { font-size: 0.82rem; color: var(--dim); margin-top: 4px; }
     .location-badge { font-size: 0.72rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; display: inline-flex; gap: 8px; align-items: center; padding: 4px 8px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; }
     .badge-dot { display: none; }
 
@@ -140,14 +281,190 @@
     .btn-secondary:hover { opacity: 0.8; }
     .btn-secondary.active { border-color: var(--gain); color: var(--gain); background: var(--gain-bg); }
 
-    .btn-toggle-group { display: flex; gap: 8px; }
+    .btn-toggle-group {
+      display: inline-grid;
+      grid-template-columns: auto auto;
+      gap: 0;
+      width: auto;
+      padding: 2px;
+      border-radius: 9px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.02);
+      flex: 1;
+    }
+    .btn-toggle-group .btn {
+      justify-content: center;
+      width: auto;
+      min-width: 72px;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      padding: 8px 10px;
+    }
+    .btn-toggle-group .btn.btn-secondary.active {
+      background: rgba(99,102,241,0.18);
+      color: #fff;
+      box-shadow: inset 0 0 0 1px rgba(99,102,241,0.35);
+      border-color: rgba(99,102,241,0.35);
+    }
+
+    .control-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .control-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .btn-refresh {
+      width: 36px;
+      height: 36px;
+      justify-content: center;
+      min-width: 0;
+      padding: 0;
+      border-radius: 999px;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
 
     .source-chip {
-      font-size: 0.7rem; color: var(--muted); border: 1px solid var(--border);
-      border-radius: 999px; padding: 3px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      font-size: 0.7rem;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      white-space: nowrap;
     }
-    .source-chip.live   { color: var(--gain); border-color: rgba(16,185,129,0.25); background: var(--gain-bg); }
-    .source-chip.fallback{ color: var(--amber); border-color: rgba(245,158,11,0.25); background: var(--gold-bg); }
+    .source-chip.live {
+      background: rgba(16,185,129,0.14);
+      border-color: rgba(16,185,129,0.25);
+      color: #86efac;
+    }
+    .source-chip.fallback {
+      background: rgba(239,68,68,0.12);
+      border-color: rgba(239,68,68,0.2);
+      color: #fecaca;
+    }
+    .ratio-guide {
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .ratio-guide-panel {
+      display: grid;
+      gap: 10px;
+    }
+    .trade-signal {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      min-height: auto;
+    }
+    .trade-signal-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .trade-signal-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+    .trade-signal-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .trade-signal-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--text);
+    }
+    .trade-action-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 108px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .trade-action-pill.buy {
+      background: rgba(245,158,11,0.12);
+      border-color: rgba(245,158,11,0.2);
+      color: var(--gold);
+    }
+    .trade-action-pill.sell {
+      background: rgba(148,163,184,0.14);
+      border-color: rgba(148,163,184,0.22);
+      color: var(--silver);
+    }
+    .trade-action-pill.hold {
+      background: rgba(99,102,241,0.12);
+      border-color: rgba(99,102,241,0.22);
+      color: #dbeafe;
+    }
+    .trade-action-icon {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      display: inline-block;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.12);
+    }
+    .trade-note {
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+      margin: 0;
+      padding: 0 2px 6px;
+    }
+
+    .location-badge {
+      justify-content: center;
+      width: auto;
+      min-width: 108px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.02);
+      font-size: 0.66rem;
+      letter-spacing: 0.08em;
+    }
 
     /* ── Metals Grid ── */
     .metals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
@@ -324,52 +641,100 @@
 
     /* ── GSR Section ── */
     .gsr-section {
-      border: 1px solid rgba(255,255,255,0.1);
-      background:
-        radial-gradient(120% 90% at 0% 50%, rgba(245,158,11,0.24) 0%, rgba(245,158,11,0.03) 48%, transparent 72%),
-        radial-gradient(120% 90% at 100% 50%, rgba(148,163,184,0.22) 0%, rgba(148,163,184,0.03) 48%, transparent 72%),
-        linear-gradient(90deg, rgba(12,16,32,0.96) 0%, rgba(10,14,29,0.98) 50%, rgba(12,16,32,0.96) 100%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(18,24,42,0.95) 0%, rgba(12,16,30,0.98) 100%);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 16px 30px rgba(0,0,0,0.22);
     }
-    .gsr-header {
-      margin-bottom: 10px; padding-bottom: 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+    .gsr-top {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .gsr-title { font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.03em; line-height: 1.3; }
-    .gsr-subtitle { display: none; }
-
-    .stats-grid {
+    .gsr-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.02rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+    }
+    .gsr-metrics {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      gap: 14px;
+      margin-bottom: 16px;
     }
-    .stat-item { padding: 0; min-width: 0; }
-    .stat-item-label { font-size: 0.63rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
-    .stat-item-value { font-family: 'Outfit', sans-serif; font-size: clamp(1.36rem, 2.6vw, 1.9rem); font-weight: 700; letter-spacing: -0.01em; line-height: 1.08; }
-    .stat-item-note { font-size: 0.66rem; color: var(--dim); margin-top: 4px; }
-
+    .gsr-metric {
+      min-width: 0;
+      padding: 0;
+    }
+    .gsr-label {
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .gsr-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.52rem, 2.9vw, 2.15rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+    }
+    .gsr-value-muted { color: #b6c1d6; }
     .bar-section {
-      margin-bottom: 10px;
+      margin-bottom: 0;
       padding: 0;
       border: none;
       background: transparent;
     }
-    .bar-labels { display: flex; justify-content: space-between; font-size: 0.62rem; color: var(--dim); margin-bottom: 6px; }
-    .bar-track { height: 7px; border-radius: 999px; background: rgba(255,255,255,0.1); overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 999px; transition: width 0.7s cubic-bezier(0.4,0,0.2,1); }
-
-    .signal-box {
-      display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
-      background: rgba(255,255,255,0.012); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--r-sm); padding: 9px 10px;
+    .bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 10px;
+      letter-spacing: 0.01em;
     }
-    .signal-content { flex: 1; }
-    .signal-tag  { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-    .signal-text { font-family: 'Outfit', sans-serif; font-size: 0.92rem; font-weight: 600; }
-    .btn-signal  { border: none; border-radius: var(--r-sm); padding: 9px 14px; font-family: 'Outfit', sans-serif;
-      font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; text-transform: uppercase; white-space: nowrap; }
+    .bar-track {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.10);
+      overflow: hidden;
+    }
+    .bar-fill { height: 100%; border-radius: 999px; transition: width 0.7s cubic-bezier(0.4,0,0.2,1); }
+    .btn-signal  {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      line-height: 1;
+      text-align: center;
+      cursor: pointer;
+      text-transform: uppercase;
+      white-space: nowrap;
+      min-width: 124px;
+      border: 1px solid rgba(255,255,255,0.12);
+      transition: transform 0.15s ease, filter 0.2s ease, border-color 0.2s ease;
+    }
+    .btn-signal:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+      border-color: rgba(255,255,255,0.22);
+    }
+    .btn-signal:active {
+      transform: translateY(0);
+    }
 
     /* ── Color Utils ── */
     .gain { color: var(--gain); }
@@ -394,19 +759,32 @@
 
     /* ── Responsive ── */
     @media(max-width: 900px) {
+      .portfolio-header { grid-template-columns: 1fr; gap: 14px; }
+      .portfolio-section { min-height: 0; }
+      .portfolio-middle { padding-top: 0; }
+      .alloc-details { grid-template-columns: 1fr; }
+      .trade-head { gap: 8px; }
+      .trade-location { margin-left: 0; }
+      .control-line { width: 100%; }
+      .btn-refresh { width: auto; min-width: 0; }
+      .btn-toggle-group { width: auto; flex: 1; }
       .metals-grid { grid-template-columns: 1fr; }
-      .stats-grid  { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .gsr-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media(max-width: 660px) {
       body { padding: 18px 12px 34px; }
       .card { padding: 16px; }
 
-      .portfolio-header { flex-direction: column; gap: 14px; }
-      .portfolio-controls { align-items: flex-start; width: 100%; }
+      .portfolio-header { gap: 14px; }
+      .portfolio-right { padding-top: 0; }
+      .portfolio-controls { align-items: stretch; width: 100%; }
       .portfolio-controls > * { width: 100%; }
-      .btn-toggle-group { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
-      .btn-toggle-group .btn { width: 100%; justify-content: center; }
-      .location-badge { width: max-content; }
+      .trade-head { justify-content: space-between; width: 100%; }
+      .trade-location { margin-left: 0; }
+      .control-line { width: 100%; }
+      .btn-toggle-group { width: auto; grid-template-columns: 1fr 1fr; }
+      .btn-toggle-group .btn { width: 100%; min-width: 0; }
+      .portfolio-section { padding: 14px; }
 
       .stat-value { font-size: clamp(1.7rem, 8vw, 2.2rem); }
       .stat-change { flex-wrap: wrap; row-gap: 2px; }
@@ -418,10 +796,10 @@
       .calc-input-result-row { flex-direction: column; align-items: stretch; }
       .calc-input-box, .calc-result { width: 100%; }
 
-      .stats-grid { grid-template-columns: 1fr; gap: 10px; }
+      .gsr-top { flex-direction: row; align-items: center; gap: 10px; }
+      .gsr-metrics { grid-template-columns: 1fr; gap: 12px; }
       .bar-labels { font-size: 0.58rem; }
-      .signal-box { flex-direction: column; align-items: stretch; }
-      .btn-signal { width: 100%; text-align: center; justify-content: center; }
+      .btn-signal { width: auto; min-width: 0; padding: 7px 12px; }
 
       .error-banner { flex-direction: column; align-items: flex-start; }
       .error-banner .btn { width: 100%; justify-content: center; }
@@ -430,8 +808,7 @@
       .section-header { font-size: 0.72rem; letter-spacing: 0.1em; }
       .calc-header { display: grid; grid-template-columns: 1fr 1fr; }
       .calc-btn { width: 100%; text-align: center; }
-      .bar-labels span:nth-child(1),
-      .bar-labels span:nth-child(4) { display: none; }
+      .bar-labels span:nth-child(2) { display: none; }
       .footer { letter-spacing: 0.06em; }
     }
     @media(max-width: 360px) {
@@ -441,7 +818,7 @@
       .btn { font-size: 0.72rem; letter-spacing: 0.08em; padding: 8px 12px; }
       .source-chip, .location-badge { font-size: 0.62rem; letter-spacing: 0.08em; }
 
-      .stat-label { font-size: 0.64rem; }
+      .stat-label { font-size: 0.92rem; margin-bottom: 10px; }
       .stat-value { font-size: clamp(1.45rem, 8vw, 1.85rem); margin-bottom: 8px; }
       .stat-change { font-size: 0.82rem; }
       .stat-meta { font-size: 0.74rem; }
@@ -459,14 +836,10 @@
       .calc-result { padding: 9px 10px; font-size: 0.66rem; }
       .calc-result-val { font-size: 0.86rem; }
 
-      .gsr-title { font-size: 0.9rem; }
-      .gsr-subtitle { font-size: 0.67rem; }
-      .stat-item { padding: 0; }
-      .stat-item-value { font-size: clamp(1.35rem, 6.8vw, 1.9rem); }
-      .bar-section { padding: 0; }
+      .gsr-title { font-size: 0.92rem; }
+      .gsr-value { font-size: clamp(1.35rem, 6.8vw, 1.9rem); }
       .bar-labels { font-size: 0.55rem; }
-      .signal-text { font-size: 0.9rem; }
-      .btn-signal { font-size: 0.72rem; padding: 9px 12px; }
+      .btn-signal { font-size: 0.68rem; padding: 6px 10px; }
     }
   </style>
 </head>
@@ -482,27 +855,72 @@
   <!-- Portfolio Header Section -->
   <div class="card primary-accent">
     <div class="portfolio-header">
-      <div class="portfolio-stats">
+      <div class="portfolio-stats portfolio-section">
         <div class="stat-block">
-          <div class="stat-label">Net Portfolio Valuation</div>
+          <div class="panel-heading">Net Portfolio Valuation</div>
           <div class="stat-value" id="totalVal">₹ --</div>
           <div class="stat-change" id="totalChange"><span style="color: var(--text-muted);">--</span></div>
           <div class="stat-meta" id="prevClose">Previous Close: --</div>
           <div class="stat-meta" id="asOf">As of --</div>
         </div>
       </div>
-      <div class="portfolio-controls">
-        <button class="btn btn-secondary" id="refreshBtn" onclick="refreshRates()">↻ Refresh Rates</button>
-        <div class="location-badge">
-          <span class="badge-dot"></span>
-          <span>Trichy, TN</span>
+      <div class="portfolio-middle portfolio-section">
+        <div class="panel-heading">Allocation</div>
+        <div class="alloc-row">
+          <div class="alloc-item gold-col">Gold <span id="allocGoldPct">--%</span></div>
+          <div class="alloc-item silver-col">Silver <span id="allocSilverPct">--%</span></div>
         </div>
-        <div class="btn-toggle-group">
-          <button class="btn btn-secondary active" id="buyBtn" onclick="setMode('buy')">Buy Mode</button>
-          <button class="btn btn-secondary" id="sellBtn" onclick="setMode('sell')">Sell Mode</button>
+        <div class="alloc-track">
+          <div class="alloc-bar gold" id="allocGoldBar" style="width:0%"></div>
+          <div class="alloc-bar silver" id="allocSilverBar" style="width:0%"></div>
         </div>
-        <div id="modeHelp" class="label" style="text-align: right;">Buy mode uses spot rates</div>
-        <div id="sourceChip" class="source-chip">● Data Source: --</div>
+        <div class="alloc-details">
+          <div class="alloc-detail">
+            Gold Allocated
+            <strong id="allocGoldVal">₹ --</strong>
+          </div>
+          <div class="alloc-detail">
+            Silver Allocated
+            <strong id="allocSilverVal">₹ --</strong>
+          </div>
+        </div>
+      </div>
+      <div class="portfolio-right portfolio-section">
+        <div class="trade-head">
+          <div class="panel-heading controls-kicker">Trade Controls</div>
+          <div class="trade-location">Trichy, TN</div>
+        </div>
+        <div class="portfolio-controls">
+          <div class="control-line">
+            <div class="btn-toggle-group" role="group" aria-label="Trade mode">
+              <button class="btn btn-secondary active" id="buyBtn" onclick="setMode('buy')" type="button">Buy</button>
+              <button class="btn btn-secondary" id="sellBtn" onclick="setMode('sell')" type="button">Sell</button>
+            </div>
+            <div class="control-status">
+              <button class="btn btn-secondary btn-refresh" id="refreshBtn" onclick="refreshRates()" type="button" aria-label="Refresh rates">↻</button>
+              <span class="source-chip live" id="sourceChip">● Live</span>
+            </div>
+          </div>
+
+          <div class="ratio-guide">
+            <div class="panel-heading">Gold/Silver Ratio Guide</div>
+            <div class="ratio-guide-panel">
+              <div class="trade-signal">
+                <div class="trade-signal-top">
+                  <div class="trade-signal-details">
+                    <span class="trade-signal-label">Current ratio</span>
+                    <strong class="trade-signal-value" id="tradeRatio">--</strong>
+                  </div>
+                  <span class="trade-action-pill" id="tradeAction">
+                    <span class="trade-action-icon"></span>
+                    <span class="trade-action-text">--</span>
+                  </span>
+                </div>
+                <div class="trade-note" id="tradeNote">Buy uses spot price.</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -711,51 +1129,6 @@
     </div>
   </div>
 
-  <!-- Gold/Silver Ratio Card -->
-  <div class="card gsr-section">
-    <div class="gsr-header">
-      <div class="gsr-title">Gold/Silver Ratio Guide</div>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-item">
-        <div class="stat-item-label">Current Ratio</div>
-        <div class="stat-item-value" id="gsrRatio">--</div>
-        <div class="stat-item-note">Gold ÷ Silver price</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-item-label">10Y Average</div>
-        <div class="stat-item-value">62.00</div>
-        <div class="stat-item-note">Historical baseline</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-item-label">Deviation</div>
-        <div class="stat-item-value" id="gsrDev">--</div>
-        <div class="stat-item-note">Gap from average</div>
-      </div>
-    </div>
-
-    <div class="bar-section">
-      <div class="bar-labels">
-        <span>0</span>
-        <span>50 (Gold cheap)</span>
-        <span>80 (Silver cheap)</span>
-        <span>120</span>
-      </div>
-      <div class="bar-track">
-        <div class="bar-fill" id="gsrBar" style="width: 0%;"></div>
-      </div>
-    </div>
-
-    <div class="signal-box">
-      <div class="signal-content">
-        <div class="signal-tag">Strategy Signal</div>
-        <div class="signal-text" id="gsrText">--</div>
-      </div>
-      <button class="btn btn-primary btn-signal" id="gsrBtn">--</button>
-    </div>
-  </div>
-
   <div class="footer">For informational purposes only — not financial advice</div>
 </div>
 
@@ -792,7 +1165,6 @@
     mode = m;
     $('buyBtn').classList.toggle('active', m === 'buy');
     $('sellBtn').classList.toggle('active', m === 'sell');
-    $('modeHelp').innerText = m === 'buy' ? 'Buy mode uses spot rates.' : 'Sell mode applies 3% spread (97% of spot).';
     recalc();
   }
 
@@ -882,11 +1254,11 @@
   // ─────────────────────────────────────────────
   // Loading / Error
   // ─────────────────────────────────────────────
-  const SK_IDS = ['totalVal', 'totalChange', 'prevClose', 'goldPrice', 'silverPrice', 'goldVal', 'silverVal', 'gsrRatio', 'gsrDev', 'gsrText'];
+  const SK_IDS = ['totalVal', 'totalChange', 'prevClose', 'goldPrice', 'silverPrice', 'goldVal', 'silverVal', 'tradeRatio', 'tradeAction'];
 
   function setLoading(v) {
     $('refreshBtn').disabled = v;
-    $('refreshBtn').innerText = v ? '↻ Refreshing…' : '↻ Refresh Rates';
+    $('refreshBtn').innerText = '↻';
     SK_IDS.forEach(id => { const el = $(id); if (el) el.classList.toggle('sk', v); });
   }
 
@@ -895,8 +1267,9 @@
 
   function updateSourceChip(src) {
     const el = $('sourceChip');
+    if (!el) return;
     el.className = `source-chip ${src}`;
-    el.innerText = src === 'live' ? '● Data Source: Live' : (src === 'fallback' ? '⚠ Data Source: Fallback' : 'Data Source: --');
+    el.innerText = src === 'live' ? '● Live' : (src === 'fallback' ? '⚠ Fallback' : 'Data Source: --');
   }
 
   // ─────────────────────────────────────────────
@@ -909,12 +1282,11 @@
       const map = { 'BUY GOLD': { btn:'BUY GOLD', bg:'#fbbf24', fg:'#1a0f00' },
                     'BUY SILVER': { btn:'BUY SILVER', bg:'#a8adb8', fg:'#0f1520' },
                     'BALANCED':  { btn:'HOLD', bg:'#6b7280', fg:'#ffffff' } };
-      const s = map[strategy.advice] || map.BALANCED;
-      return { text: strategy.explanation || 'Maintain a balanced allocation.', ...s };
+      return map[strategy.advice] || map.BALANCED;
     }
-    if (ratio < 50) return { text:'Gold looks cheaper now. You can buy slowly.', btn:'BUY GOLD', bg:'#fbbf24', fg:'#1a0f00' };
-    if (ratio > 80) return { text:'Silver looks cheaper now. You can buy slowly.', btn:'BUY SILVER', bg:'#a8adb8', fg:'#0f1520' };
-    return { text:'Prices look balanced. Hold or buy both slowly.', btn:'HOLD', bg:'#6b7280', fg:'#ffffff' };
+    if (ratio < 50) return { btn:'BUY GOLD', bg:'#fbbf24', fg:'#1a0f00' };
+    if (ratio > 80) return { btn:'BUY SILVER', bg:'#a8adb8', fg:'#0f1520' };
+    return { btn:'HOLD', bg:'#6b7280', fg:'#ffffff' };
   };
 
   // ─────────────────────────────────────────────
@@ -930,9 +1302,11 @@
 
     const gp = effectivePrice(data.gold.price);
     const sp = effectivePrice(data.silver.price);
+    const gPrev = effectivePrice(data.gold.prevClose);
+    const sPrev = effectivePrice(data.silver.prevClose);
     const gv = gp * gh, sv = sp * sh, tv = gv + sv;
 
-    const pv = (data.gold.prevClose * gh) + (data.silver.prevClose * sh);
+    const pv = (gPrev * gh) + (sPrev * sh);
     const tc = tv - pv;
     const pct = pv > 0 ? (tc / pv * 100).toFixed(2) : '0.00';
 
@@ -941,6 +1315,14 @@
     $('totalChange').innerHTML   = `${arrow(tc >= 0)} <span class="${tc >= 0 ? 'gain' : 'loss'}">${fmtINR(Math.abs(tc))} (${Math.abs(Number(pct)).toFixed(2)}%)</span> <span style="color:#7d8695">Today</span>`;
     $('prevClose').textContent   = `Previous Close: ${fmtINR(pv)}`;
     $('asOf').textContent        = `As of ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} | ${data.date}`;
+    const goldShare = tv > 0 ? (gv / tv) * 100 : 0;
+    const silverShare = tv > 0 ? (sv / tv) * 100 : 0;
+    $('allocGoldPct').textContent = `${goldShare.toFixed(1)}%`;
+    $('allocSilverPct').textContent = `${silverShare.toFixed(1)}%`;
+    $('allocGoldBar').style.width = `${goldShare}%`;
+    $('allocSilverBar').style.width = `${silverShare}%`;
+    $('allocGoldVal').textContent = fmtINR(gv);
+    $('allocSilverVal').textContent = fmtINR(sv);
 
     // Prices & badges
     $('goldPrice').textContent   = fmtINR(gp, 2);
@@ -985,20 +1367,23 @@
     $('tSilverD5').textContent   = dayVal(4, 'silver');
     $('tSilverDiff').innerHTML   = `<span class="${sDiff >= 0 ? 'gain' : 'loss'}">${sDiff >= 0 ? '+' : '-'}${fmtINR(Math.abs(sDiff), 2)}</span>`;
 
-    // GSR
+    // Ratio signal (moved into trade controls)
     const ratio = Number(data.ratio?.current) || (gp / sp);
-    const dev   = Number(data.ratio?.deviation ?? (((ratio - RATIO_AVG) / RATIO_AVG) * 100));
     const sig   = gsrSignal(ratio, data.strategy);
+    const actionColor = sig.btn === 'BUY GOLD' ? '#fbbf24' : (sig.btn === 'BUY SILVER' ? '#a8adb8' : '#94a3b8');
+    $('tradeRatio').textContent = ratio.toFixed(2);
+    const actionEl = $('tradeAction');
+    const actionText = actionEl.querySelector('.trade-action-text');
+    const actionClass = sig.btn === 'BUY GOLD' ? 'buy' : (sig.btn === 'BUY SILVER' ? 'sell' : 'hold');
+    actionEl.classList.remove('buy', 'sell', 'hold');
+    actionEl.classList.add(actionClass);
+    actionText.textContent = sig.btn;
 
-    $('gsrRatio').textContent = ratio.toFixed(2);
-    $('gsrDev').textContent   = `${dev > 0 ? '+' : ''}${dev.toFixed(1)}%`;
-    $('gsrDev').style.color   = dev < 0 ? '#10b981' : '#ef4444';
-    $('gsrBar').style.width   = `${Math.min((ratio / 120) * 100, 100)}%`;
-    $('gsrBar').style.background = ratio < 50 ? '#fbbf24' : (ratio > 80 ? '#a8adb8' : '#2563eb');
-    $('gsrText').textContent  = sig.text;
-    $('gsrBtn').textContent   = sig.btn;
-    $('gsrBtn').style.background = sig.bg;
-    $('gsrBtn').style.color      = sig.fg;
+    $('tradeNote').textContent = mode === 'buy'
+      ? 'Buy uses spot price.'
+      : (mode === 'sell'
+        ? 'Sell uses 97% of spot.'
+        : 'Hold keeps current allocation.');
   }
 
   // ─────────────────────────────────────────────
