@@ -12,7 +12,10 @@ const FALLBACK = {
 };
 
 const numberFromText = (value) => {
-    const parsed = Number.parseFloat(String(value || '').replace(/[^\d.]/g, ''));
+    const match = String(value || '').match(/\d[\d,]*(?:\.\d+)?/);
+    if (!match) return null;
+
+    const parsed = Number.parseFloat(match[0].replace(/,/g, ''));
     return Number.isFinite(parsed) ? parsed : null;
 };
 
@@ -177,7 +180,7 @@ const parseRates = ($) => {
     return { price: today, prevClose: yesterday, change: today - yesterday };
 };
 
-exports.handler = async (event, context) => {
+const handler = async (event, context) => {
     const config = {
         headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/122.0.0.0' },
         timeout: 8000
@@ -228,3 +231,6 @@ exports.handler = async (event, context) => {
         };
     }
 };
+
+module.exports = { handler };
+exports.handler = handler;
