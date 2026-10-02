@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="favicon.png">
-<title>Ledgerline – Gold, Silver & SIP tracker</title>
+<title>Portfolio Tracker · Gold, Silver & SIP</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -23,38 +23,54 @@ button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .banner{display:none;margin:12px 0;padding:10px 14px;border-radius:8px;background:#fff4e5;border:1px solid #f5c26b;font-size:14px}
 .hero{margin:22px 0 18px;display:grid;grid-template-columns:1.4fr 1fr;gap:20px;align-items:center}
 .hero>*{min-width:0}
-.hero .chartbox{width:100%;min-width:0}
 #portfolioSummaryDetails[hidden]{display:none}
 .hero[hidden]{display:none}
 .big{font-size:clamp(40px,7vw,68px);font-weight:800;letter-spacing:-1.5px;line-height:1}
 .sub{color:var(--mute);margin-top:8px}
+.empty-state{margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:9px;color:var(--mute);font-size:13px}
+.empty-state[hidden],table[hidden]{display:none}
 .bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line);margin-top:16px}
 .bar i{display:block;transition:width .4s}
 .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:13px;color:var(--mute)}
 .legend b{color:var(--ink)} .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.summary-rates{display:grid;gap:8px}
+.summary-rate{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;background:#fff;border:1px solid var(--line);border-radius:10px}
+.summary-rate span{color:var(--mute);font-size:13px}
+.summary-rate-value{display:flex;align-items:baseline;gap:10px;white-space:nowrap}
+.summary-rate-value strong{font:700 17px/1.2 'Bricolage Grotesque',sans-serif}
+.summary-rate-value small{font:500 12px 'DM Sans',sans-serif;color:var(--mute)}
+.summary-change{font-size:13px;font-weight:700;white-space:nowrap}
+.summary-change.up{color:var(--up)}
+.summary-change.down{color:var(--down)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:16px}
+.grid>.card>h2{height:38px;display:flex;align-items:center}
 .utility-grid{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.2fr);gap:16px;margin-top:16px;align-items:stretch}
 .utility-grid>.card{min-width:0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
 .card h2{font-size:19px;margin-bottom:4px}
-.rate{font-size:28px;font-weight:700;font-family:'Bricolage Grotesque'}
-.metal-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px}
-.purity-control{width:auto;flex:0 0 auto}
-.purity-control select{width:auto;min-width:82px;padding:6px 8px}
+.metal-title{height:38px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px}
 .muted{color:var(--mute);font-size:13px}
 label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px}
 input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .purchase-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end;margin-top:14px}
 .purchase-form label{margin-top:0}
-.purchase-form input{min-width:0}
+.purchase-form input{min-width:0;height:43px}
 .purchase-form button{grid-column:1/-1}
 .purchase-form+table{margin-top:10px}
-.sip-form{grid-template-columns:1fr;margin-top:4px}
-.sip-submit{width:100%;margin-top:10px}
+.sip-form{margin-top:14px}
 .kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)} .kv:last-child{border:0}
+.convert-fields{margin-top:12px}
+.convert-fields label{margin-top:0}
+.ratio-summary{margin-top:20px;padding:14px 15px;background:#f6f8fa;border:1px solid var(--line);border-radius:10px}
+.ratio-summary h3{font:700 15px/1.4 'Bricolage Grotesque',sans-serif;margin:0 0 8px}
+.ratio-value{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.ratio-value b{font:700 24px/1 'Bricolage Grotesque',sans-serif}
 .up{color:var(--up)} .down{color:var(--down)}
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
+.history-heading{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.history-period{font-size:12px;color:var(--mute);white-space:nowrap}
+.history-note{min-height:20px;margin-top:8px}
 .sec{margin-top:16px} table{width:100%;border-collapse:collapse;font-size:14px}
 td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left} th{color:var(--mute);font-weight:500;font-size:13px}
 .x{border:0;color:var(--down);padding:2px 8px}
@@ -62,8 +78,22 @@ td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left} th{co
 .chartbox canvas{max-width:100%}
 .tag{font-size:12px;background:#eef1f4;border-radius:6px;padding:2px 8px;color:var(--mute)}
 footer{margin-top:30px;color:var(--mute);font-size:13px;text-align:center}
-@media(max-width:760px){.hero{grid-template-columns:1fr}.utility-grid{grid-template-columns:1fr}}
-@media(max-width:380px){.metal-title{gap:8px}.purity-control select{min-width:74px}}
+@media(max-width:760px){
+  .wrap{padding:16px 12px 36px}
+  .hero{grid-template-columns:1fr;gap:12px;margin:16px 0}
+  .summary-rates{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .summary-rate{display:block;padding:9px 8px;min-width:0}
+  .summary-rate span{display:block;font-size:11px;line-height:1.3;min-height:29px}
+  .summary-rate-value{display:block;white-space:normal}
+  .summary-rate-value strong{font-size:15px}
+  .summary-rate-value small{font-size:11px}
+  .summary-change{display:block;margin-top:4px;font-size:12px}
+  .grid,.utility-grid{grid-template-columns:minmax(0,1fr);gap:12px}
+  .card{padding:16px}
+  .utility-grid{margin-top:12px}
+  .chartbox{height:230px}
+}
+@media(max-width:380px){.metal-title{gap:8px}}
 .hero[hidden]{display:none}
 </style>
 </head>
@@ -71,7 +101,7 @@ footer{margin-top:30px;color:var(--mute);font-size:13px;text-align:center}
 <div class="wrap">
 
 <div class="top">
-  <h1 style="font-size:24px">Ledgerline <span class="tag">Trichy, TN</span></h1>
+  <h1 style="font-size:24px">Portfolio Tracker <span class="tag">Trichy, TN</span></h1>
   <div class="status"><span class="dot off" id="dot"></span><span id="statusTxt">Loading rates…</span> <button id="retry" onclick="loadRates()">Refresh</button></div>
 </div>
 <div class="banner" id="banner"></div>
@@ -79,9 +109,9 @@ footer{margin-top:30px;color:var(--mute);font-size:13px;text-align:center}
 <!-- NET WORTH -->
 <section class="hero" id="portfolioSummary">
   <div>
-    <div class="muted">Net worth (gold + silver at market, SIPs at amount invested)</div>
-    <div class="big" id="net">₹ --</div>
-    <div class="sub" id="netPnl">Add your holdings below to see profit and loss.</div>
+    <div class="muted">Net worth (gold and silver at market value, SIPs at amount invested)</div>
+    <div class="big" id="net">₹ 0</div>
+    <div class="sub" id="summaryHint">Add your first holding to see your portfolio allocation.</div>
     <div class="bar"><i id="bG" style="background:var(--gold);width:0"></i><i id="bS" style="background:var(--silver);width:0"></i><i id="bP" style="background:var(--sip);width:0"></i></div>
     <div class="legend">
       <span><span class="sw" style="background:var(--gold)"></span>Gold <b id="lG">0%</b></span>
@@ -89,51 +119,49 @@ footer{margin-top:30px;color:var(--mute);font-size:13px;text-align:center}
       <span><span class="sw" style="background:var(--sip)"></span>SIPs <b id="lP">0%</b></span>
     </div>
   </div>
-  <div class="chartbox" style="height:220px"><canvas id="donut"></canvas></div>
+  <div class="summary-rates" aria-label="Current metal rates">
+    <div class="summary-rate"><span>Current Gold 24K rate</span><div class="summary-rate-value"><strong><b id="summaryG24">₹ --</b> <small>/g</small></strong><span class="summary-change" id="summaryG24Change" aria-label="Change from yesterday">--</span></div></div>
+    <div class="summary-rate"><span>Current Gold 22K rate</span><div class="summary-rate-value"><strong><b id="summaryG22">₹ --</b> <small>/g</small></strong><span class="summary-change" id="summaryG22Change" aria-label="Change from yesterday">--</span></div></div>
+    <div class="summary-rate"><span>Current Silver rate</span><div class="summary-rate-value"><strong><b id="summarySilver">₹ --</b> <small>/g</small></strong><span class="summary-change" id="summarySilverChange" aria-label="Change from yesterday">--</span></div></div>
+  </div>
 </section>
 
 <!-- METALS -->
 <div class="grid">
   <div class="card">
-    <div class="metal-title">
-      <h2 style="color:var(--gold)">Gold</h2>
-      <div class="purity-control">
-        <select id="purity" aria-label="Gold purity" title="Gold purity" onchange="savePortfolio();render()"><option value="1">24K</option><option value="0.916667">22K</option><option value="0.75">18K</option></select>
-      </div>
-    </div>
-    <div class="rate" id="gRate">₹ --</div><div class="muted" id="gSub">/g</div>
+    <div class="metal-title"><h2 style="color:var(--gold)">Gold</h2></div>
     <div class="kv"><span>Current holdings</span><b id="gHoldings">0 g</b></div>
     <div class="purchase-form">
       <div><label for="gPurchaseMonth">Month</label><input id="gPurchaseMonth" type="month"></div>
       <div><label for="gPurchaseGrams">Grams purchased</label><input id="gPurchaseGrams" type="number" min="0" step="0.01" placeholder="e.g. 10"></div>
-      <button class="on" onclick="addMetalPurchase('gold')">Add / update</button>
+      <button class="on" onclick="addMetalPurchase('gold')">Add</button>
     </div>
-    <table class="sec"><thead><tr><th>Month</th><th>Grams purchased</th><th></th></tr></thead><tbody id="goldPurchaseBody"></tbody></table>
+    <div class="empty-state" id="goldPurchaseEmpty">No purchases yet. Add a month above to start tracking.</div>
+    <table class="sec" id="goldPurchaseTable" hidden><thead><tr><th>Month</th><th>Grams purchased</th><th></th></tr></thead><tbody id="goldPurchaseBody"></tbody></table>
   </div>
 
   <div class="card">
     <h2 style="color:var(--silver)">Silver</h2>
-    <div class="rate" id="sRate">₹ --</div><div class="muted" id="sSub">/g</div>
     <div class="kv"><span>Current holdings</span><b id="sHoldings">0 g</b></div>
     <div class="purchase-form">
       <div><label for="sPurchaseMonth">Month</label><input id="sPurchaseMonth" type="month"></div>
       <div><label for="sPurchaseGrams">Grams purchased</label><input id="sPurchaseGrams" type="number" min="0" step="0.01" placeholder="e.g. 250"></div>
-      <button class="on" onclick="addMetalPurchase('silver')">Add / update</button>
+      <button class="on" onclick="addMetalPurchase('silver')">Add</button>
     </div>
-    <table class="sec"><thead><tr><th>Month</th><th>Grams purchased</th><th></th></tr></thead><tbody id="silverPurchaseBody"></tbody></table>
+    <div class="empty-state" id="silverPurchaseEmpty">No purchases yet. Add a month above to start tracking.</div>
+    <table class="sec" id="silverPurchaseTable" hidden><thead><tr><th>Month</th><th>Grams purchased</th><th></th></tr></thead><tbody id="silverPurchaseBody"></tbody></table>
   </div>
 
   <div class="card">
-    <h2 style="color:var(--sip)">SIP: Tata Ethical Direct Plan Growth</h2>
-    <div class="muted" id="sipSince"></div>
-    <div class="row sip-form">
-      <div><label for="fmon">Month</label><input id="fmon" type="month" value="2026-10"></div>
-      <div><label for="fa">Amount invested (₹)</label><input id="fa" type="number" min="0" placeholder="1100"></div>
-    </div>
-    <button class="on sip-submit" onclick="addSip()">Add / update</button>
-    <table class="sec"><thead><tr><th>Month</th><th>Invested</th><th>Total so far</th><th></th></tr></thead><tbody id="sipBody"></tbody></table>
-    <div class="kv"><span>Current monthly SIP</span><b id="sipMonthly">₹ 0</b></div>
+    <h2 style="color:var(--sip)">SIP</h2>
     <div class="kv"><span>Total invested</span><b id="sipTotal">₹ 0</b></div>
+    <div class="purchase-form sip-form">
+      <div><label for="fmon">Month</label><input id="fmon" type="month"></div>
+      <div><label for="fa">Amount invested (₹)</label><input id="fa" type="number" min="0" placeholder="e.g. ₹1000"></div>
+      <button class="on" onclick="addSip()">Add</button>
+    </div>
+    <div class="empty-state" id="sipEmpty">No SIP contributions yet. Add a month above to start tracking.</div>
+    <table class="sec" id="sipTable" hidden><thead><tr><th>Month</th><th>Invested</th><th></th></tr></thead><tbody id="sipBody"></tbody></table>
   </div>
 </div>
 
@@ -142,22 +170,25 @@ footer{margin-top:30px;color:var(--mute);font-size:13px;text-align:center}
     <h2>Convert</h2>
     <div class="muted">Amount ↔ grams at today's rate</div>
     <label for="cm">Metal</label><select id="cm" onchange="convert()"><option value="g">Gold</option><option value="s">Silver</option></select>
-    <div class="row">
+    <div class="row convert-fields">
       <div><label for="cr">Amount (₹)</label><input id="cr" type="number" placeholder="10000" oninput="convert('r')"></div>
       <div><label for="cg">Grams</label><input id="cg" type="number" placeholder="0" oninput="convert('g')"></div>
     </div>
-    <div class="kv sec"><span>Gold/silver ratio</span><span><b id="ratio">--</b> <span class="tag" id="ratioTag"></span></span></div>
+    <div class="ratio-summary">
+      <h3>Gold/Silver Ratio</h3>
+      <div class="muted">24K Gold rate per gram ÷ Silver rate per gram</div>
+      <div class="ratio-value"><b id="ratio">--</b></div>
+    </div>
   </div>
   <div class="card">
-    <h2>Price history · Trichy</h2>
-    <div class="tabs" style="margin-top:8px" id="metalTabs"></div>
-    <div class="tabs" style="margin-top:8px"><button class="on" type="button" aria-pressed="true">1W</button></div>
-    <div class="muted" id="histNote">Rates per gram · Goodreturns Trichy.</div>
-    <div class="chartbox"><canvas id="hist"></canvas></div>
+    <div class="history-heading"><h2>Price History · Trichy</h2><span class="history-period">Past 7 days</span></div>
+    <div class="tabs" style="margin-top:8px" id="metalTabs" role="group" aria-label="Select price history metal"></div>
+    <div class="muted history-note" id="histNote" aria-live="polite">Loading price history…</div>
+    <div class="chartbox" id="historyChartBox" hidden><canvas id="hist"></canvas></div>
   </div>
 </div>
 
-<footer>For information only, not financial advice. Rates: Goodreturns, Trichy (per gram). Portfolio details are saved in this browser; market rates refresh automatically.</footer>
+<footer>For information only, not financial advice.</footer>
 </div>
 
 <script>
@@ -169,21 +200,20 @@ const PROXY = u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u)
 
 /* ===== STATE ===== */
 let rates = null;      // {xau, xag, inr, ts}  last good rates
-const FUND = 'Tata Ethical Direct Plan Growth';
+let rateLoadState = 'loading';
 const STORAGE_KEY = 'ledgerline.portfolio.v2';
 const LEGACY_STORAGE_KEY = 'ledgerline.portfolio.v1';
-let sips = [{ m: '2026-09', amt: 1000 }, { m: '2026-10', amt: 1100 }];   // started Sep 2026
+let sips = [];
+const LEGACY_SAMPLE_SIPS = [{ m: '2026-09', amt: 1000 }, { m: '2026-10', amt: 1100 }];
 let historyCache = [];
 const metalPurchases = { gold: [], silver: [] };
 const openingBalances = { gold: { grams: 0, invested: 0 }, silver: { grams: 0, invested: 0 } };
-let metalSel = 'g24';
+let metalSel = 'gold';
 let storageNotice = '';
 
 const $ = id => document.getElementById(id);
 const num = id => parseFloat($(id).value) || 0;
 const inr = n => '₹ ' + Math.round(n).toLocaleString('en-IN');
-const pct = n => (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
-const cls = n => n >= 0 ? 'up' : 'down';
 function setStorageNotice(message) {
   storageNotice = message;
   if (message) {
@@ -206,16 +236,17 @@ function restorePortfolio() {
     if (!raw) return;
     const saved = JSON.parse(raw);
     if (!saved ||
-        !['1', '0.916667', '0.75'].includes(saved.purity) ||
-        !['g24', 'g22', 's', 'p'].includes(saved.metalSel) ||
+        !['gold', 'g24', 'g22', 's', 'p'].includes(saved.metalSel) ||
         !Array.isArray(saved.sips) ||
         !saved.sips.every(entry => entry && /^\d{4}-(0[1-9]|1[0-2])$/.test(entry.m) && Number.isFinite(entry.amt) && entry.amt > 0) ||
         !Array.isArray(saved.history)) {
       throw new Error('Saved portfolio data has an invalid format.');
     }
-    $('purity').value = saved.purity;
-    metalSel = saved.metalSel;
-    sips = saved.sips.slice().sort((a, b) => a.m.localeCompare(b.m));
+    metalSel = saved.metalSel === 'g24' || saved.metalSel === 'g22' ? 'gold' : saved.metalSel;
+    const restoredSips = saved.sips.filter(entry =>
+      saved.version >= 3 || !LEGACY_SAMPLE_SIPS.some(starter => starter.m === entry.m && starter.amt === entry.amt)
+    );
+    sips = restoredSips.sort((a, b) => a.m.localeCompare(b.m));
     if (saved.version === 1) {
       const goldGrams = Number(saved.goldGrams) || 0;
       const goldInvested = Number(saved.goldInvested) || 0;
@@ -226,7 +257,7 @@ function restorePortfolio() {
       }
       openingBalances.gold = { grams: goldGrams, invested: goldInvested };
       openingBalances.silver = { grams: silverGrams, invested: silverInvested };
-    } else if (saved.version === 2) {
+    } else if (saved.version === 2 || saved.version === 3 || saved.version === 4) {
       for (const metal of ['gold', 'silver']) {
         const opening = saved.openingBalances?.[metal];
         const purchases = saved.metalPurchases?.[metal];
@@ -246,7 +277,7 @@ function restorePortfolio() {
       Number.isFinite(point.gold) && point.gold > 0 &&
       Number.isFinite(point.silver) && point.silver > 0
     );
-    if (!currentData) savePortfolio();
+    if (!currentData || saved.version < 4) savePortfolio();
   } catch (error) {
     console.error('Could not restore saved portfolio data.', error);
     setStorageNotice('Could not read saved data from this browser. Your changes may not persist.');
@@ -255,10 +286,9 @@ function restorePortfolio() {
 function savePortfolio() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      version: 2,
+      version: 4,
       openingBalances,
       metalPurchases,
-      purity: $('purity').value,
       metalSel,
       sips,
       history: historyCache
@@ -338,53 +368,56 @@ async function loadRates() {
     catch (_) { d = await scrapeInBrowser(); }
     historyCache = mergeHistory(historyCache, d.history || d.history7 || []);
     rates = { g24: d.gold.price, g24prev: d.gold.prevClose, s: d.silver.price, sprev: d.silver.prevClose, hist: historyCache, ts: new Date() };
+    rateLoadState = 'loaded';
     savePortfolio();
     if (!storageNotice) $('banner').style.display = 'none';
   } catch (e) {
+    rateLoadState = 'error';
     $('banner').style.display = 'block';
     $('banner').textContent = storageNotice + (storageNotice ? ' ' : '') + (rates ? 'Could not refresh. Showing the last rates fetched at ' + rates.ts.toLocaleTimeString() + '. ' : 'Could not load Trichy rates. ') + '(' + (e.message || 'network error') + ')';
   }
   render(); drawHistory();
 }
 const gram24 = () => rates ? rates.g24 : 0;
-const gramGold = () => gram24() * parseFloat($('purity').value);
+const gramGold = () => gram24();
 const gramSilver = () => rates ? rates.s : 0;
 
 /* ===== MAIN RENDER ===== */
-let donut;
 function render() {
   const live = !!rates;
   $('dot').className = 'dot' + (live ? '' : ' off');
   $('statusTxt').textContent = live ? 'Updated ' + rates.ts.toLocaleTimeString() : 'No rates yet';
 
   const gp = gramGold(), sp = gramSilver();
-  $('gRate').textContent = live ? inr(gp) : '₹ --';
-  $('sRate').textContent = live ? inr(sp) : '₹ --';
+  const updateRate = (priceId, changeId, price, change) => {
+    $(priceId).textContent = live ? inr(price) : '₹ --';
+    const changeElement = $(changeId);
+    changeElement.textContent = !live ? '--' : `${change > 0 ? '+' : change < 0 ? '−' : ''}${inr(Math.abs(change))}`;
+    changeElement.className = 'summary-change' + (change > 0 ? ' up' : change < 0 ? ' down' : '');
+    changeElement.setAttribute('aria-label', !live ? 'Change from yesterday unavailable' : `Change from yesterday: ${change > 0 ? 'up ' : change < 0 ? 'down ' : ''}${inr(Math.abs(change))}`);
+  };
+  updateRate('summaryG24', 'summaryG24Change', gram24(), live ? rates.g24 - rates.g24prev : 0);
+  updateRate('summaryG22', 'summaryG22Change', gram24() * 22 / 24, live ? (rates.g24 - rates.g24prev) * 22 / 24 : 0);
+  updateRate('summarySilver', 'summarySilverChange', sp, live ? rates.s - rates.sprev : 0);
   const r = live ? gram24() / sp : 0;
   $('ratio').textContent = live ? r.toFixed(1) : '--';
-  $('ratioTag').textContent = !live ? '' : r > 85 ? 'silver looks cheap vs gold' : r < 65 ? 'gold looks cheap vs silver' : 'mid range';
-
   const goldTotals = metalTotals('gold'), silverTotals = metalTotals('silver');
   const gV = goldTotals.grams * gp, sV = silverTotals.grams * sp;
   $('gHoldings').textContent = `${formatGrams(goldTotals.grams)} g`;
   $('sHoldings').textContent = `${formatGrams(silverTotals.grams)} g`;
 
   const sipTotal = sipSum();
-  const sipMonthly = sips.length ? sips[sips.length - 1].amt : 0;
-  $('sipMonthly').textContent = inr(sipMonthly);
   $('sipTotal').textContent = inr(sipTotal);
-  const summaryReady = goldTotals.invested > 0 && silverTotals.invested > 0 && sipTotal > 0;
-  $('netPnl').hidden = !summaryReady;
+  const valuationReady = live || (goldTotals.grams === 0 && silverTotals.grams === 0);
+  const net = gV + sV + sipTotal;
+  $('net').textContent = valuationReady ? inr(net) : 'Loading…';
+  $('summaryHint').hidden = valuationReady && net > 0;
+  $('summaryHint').textContent = valuationReady
+    ? 'Add your first holding to see your portfolio allocation.'
+    : 'Loading current rates to calculate your net worth.';
 
-  const net = gV + sV + sipTotal, invested = goldTotals.invested + silverTotals.invested + sipTotal;
-  $('net').textContent = net ? inr(net) : '₹ --';
-  const diff = net - invested;
-  $('netPnl').innerHTML = invested ? `Invested ${inr(invested)} · <span class="${cls(diff)}">${diff >= 0 ? '+' : '−'}${inr(Math.abs(diff))} (${pct(diff / invested * 100)})</span>` : 'Add your holdings below to see profit and loss.';
-
-  const p = v => net ? v / net * 100 : 0;
+  const p = v => valuationReady && net ? v / net * 100 : 0;
   [['G', gV], ['S', sV], ['P', sipTotal]].forEach(([k, v]) => { $('b' + k).style.width = p(v) + '%'; $('l' + k).textContent = p(v).toFixed(2) + '%'; });
-  if (donut) { donut.data.datasets[0].data = net ? [gV, sV, sipTotal] : [0, 0, 0]; donut.update(); }
-
 }
 /* ===== METAL PURCHASES ===== */
 const formatGrams = grams => grams.toLocaleString('en-IN', { maximumFractionDigits: 2 });
@@ -432,9 +465,14 @@ function removeMetalPurchase(metal, month) {
 }
 function drawMetalPurchases(metal) {
   const body = $(metal === 'gold' ? 'goldPurchaseBody' : 'silverPurchaseBody');
-  body.innerHTML = metalPurchases[metal].map(purchase =>
+  const table = $(metal === 'gold' ? 'goldPurchaseTable' : 'silverPurchaseTable');
+  const empty = $(metal === 'gold' ? 'goldPurchaseEmpty' : 'silverPurchaseEmpty');
+  const purchases = metalPurchases[metal];
+  table.hidden = purchases.length === 0;
+  empty.hidden = purchases.length > 0;
+  body.innerHTML = purchases.map(purchase =>
     `<tr><td>${monLabel(purchase.m)}</td><td>${formatGrams(purchase.grams)} g</td><td><button class="x" onclick="removeMetalPurchase('${metal}','${purchase.m}')" aria-label="Remove ${metal} purchase for ${monLabel(purchase.m)}">✕</button></td></tr>`
-  ).join('') || '<tr><td colspan="3" class="muted">No purchases recorded yet.</td></tr>';
+  ).join('');
 }
 
 /* ===== SIP ===== */
@@ -449,11 +487,13 @@ function addSip() {
   drawSips(); render(); drawHistory();
 }
 function drawSips() {
-  let run = 0;
-  $('sipSince').textContent = sips.length ? 'Investing since ' + monLabel(sips[0].m) : 'No SIP months added yet.';
-  $('sipBody').innerHTML = sips.map((s, i) => { run += s.amt;
-    return `<tr><td>${monLabel(s.m)}</td><td>${inr(s.amt)}</td><td>${inr(run)}</td><td><button class="x" onclick="sips.splice(${i},1);savePortfolio();drawSips();render();drawHistory()" aria-label="Remove">✕</button></td></tr>`; }).join('')
-    || '<tr><td colspan="4" class="muted">Add your first month above.</td></tr>';
+  const table = $('sipTable');
+  const empty = $('sipEmpty');
+  table.hidden = sips.length === 0;
+  empty.hidden = sips.length > 0;
+  $('sipBody').innerHTML = sips.map((s, i) =>
+    `<tr><td>${monLabel(s.m)}</td><td>${inr(s.amt)}</td><td><button class="x" onclick="sips.splice(${i},1);savePortfolio();drawSips();render();drawHistory()" aria-label="Remove">✕</button></td></tr>`
+  ).join('');
 }
 
 /* ===== CONVERTER ===== */
@@ -466,8 +506,7 @@ function convert(from) {
 
 /* ===== HISTORY CHART ===== */
 let hist;
-const gf = () => parseFloat($('purity').value);
-function getHistory(metal) {
+function getHistory() {
   const sourceHistory = rates ? rates.hist : historyCache;
   if (!sourceHistory.length) return null;
   const cutoff = new Date();
@@ -475,42 +514,65 @@ function getHistory(metal) {
   const cutoffDate = cutoff.toISOString().slice(0, 10);
   return sourceHistory.filter(h => h.date >= cutoffDate).map(h => {
     const goldTotals = metalTotals('gold'), silverTotals = metalTotals('silver');
-    const v = metal === 'g24' ? h.gold : metal === 'g22' ? h.gold * 22 / 24 : metal === 's' ? h.silver
-      : goldTotals.grams * h.gold * gf() + silverTotals.grams * h.silver + sipSum();      // portfolio
-    return { date: h.date, x: new Date(h.date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }), y: Math.round(v * 100) / 100 };
+    const portfolio = goldTotals.grams * h.gold + silverTotals.grams * h.silver + sipSum();
+    return {
+      date: h.date,
+      x: new Date(h.date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
+      gold24: h.gold,
+      gold22: h.gold * 22 / 24,
+      silver: h.silver,
+      portfolio: Math.round(portfolio * 100) / 100
+    };
   });
 }
 const COLORS = { g24: '#c28e0e', g22: '#e0b24a', s: '#7d8799', p: '#1f7a6d' };
 function drawHistory() {
-  const data = getHistory(metalSel);
+  const data = getHistory();
   if (hist) hist.destroy();
-  $('histNote').textContent = !rates && !data ? 'Waiting for rates…' : !data ? 'Historical rates are not available from the source right now.'
-    : !data.length ? 'No rates available for the past week.' : 'Rates per gram · Goodreturns Trichy.';
-  if (!data) return;
-  if (!data.length) return;
-  const color = COLORS[metalSel];
+  if (!data || !data.length) {
+    $('historyChartBox').hidden = true;
+    $('histNote').textContent = rateLoadState === 'loading'
+      ? 'Loading price history…'
+      : rateLoadState === 'error'
+        ? 'Price history could not load. Refresh to try again.'
+        : 'No price history available for the past 7 days.';
+    return;
+  }
+  $('historyChartBox').hidden = false;
+  $('histNote').textContent = 'Daily rates · Past 7 days · Rates per gram.';
+  const series = metalSel === 'gold'
+    ? [['Gold 24K', 'gold24', COLORS.g24], ['Gold 22K', 'gold22', COLORS.g22]]
+    : [[metalSel === 's' ? 'Silver' : 'Portfolio', metalSel === 's' ? 'silver' : 'portfolio', COLORS[metalSel === 's' ? 's' : 'p']]];
   hist = new Chart($('hist'), {
     type: 'line',
-    data: { labels: data.map(d => d.x), datasets: [{ data: data.map(d => d.y), borderColor: color, backgroundColor: color + '22', fill: true, tension: .3, pointRadius: 3, borderWidth: 2 }] },
-    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { autoSkip: true, maxTicksLimit: 8 } }, y: { ticks: { callback: v => '₹' + v.toLocaleString('en-IN') } } } }
+    data: {
+      labels: data.map(d => d.x),
+      datasets: series.map(([label, key, color]) => ({
+        label,
+        data: data.map(d => d[key]),
+        borderColor: color,
+        backgroundColor: color + '22',
+        fill: false,
+        tension: .3,
+        pointRadius: 3,
+        borderWidth: 2
+      }))
+    },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: metalSel === 'gold' } }, scales: { x: { grid: { display: false }, ticks: { autoSkip: true, maxTicksLimit: 8 } }, y: { ticks: { callback: v => '₹' + v.toLocaleString('en-IN') } } } }
   });
 }
 function tabs(el, items, get, set) {
-  $(el).innerHTML = items.map(([k, l]) => `<button class="${get() === k ? 'on' : ''}" data-k="${k}">${l}</button>`).join('');
+  $(el).innerHTML = items.map(([k, l]) => `<button class="${get() === k ? 'on' : ''}" data-k="${k}" aria-pressed="${get() === k}">${l}</button>`).join('');
   $(el).onclick = e => { const k = e.target.dataset.k; if (!k) return; set(isNaN(k) ? k : +k); savePortfolio(); tabs(el, items, get, set); drawHistory(); };
 }
 
 /* ===== INIT ===== */
-donut = new Chart($('donut'), {
-  type: 'doughnut',
-  data: { labels: ['Gold', 'Silver', 'SIPs'], datasets: [{ data: [0, 0, 0], backgroundColor: ['#c28e0e', '#7d8799', '#1f7a6d'], borderColor: '#ffffff', borderWidth: 2 }] },
-  options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.label + ': ' + inr(c.raw) } } } }
-});
-tabs('metalTabs', [['g24', 'Gold 24K'], ['g22', 'Gold 22K'], ['s', 'Silver'], ['p', 'Portfolio']], () => metalSel, v => metalSel = v);
+tabs('metalTabs', [['gold', 'Gold'], ['s', 'Silver'], ['p', 'Portfolio']], () => metalSel, v => metalSel = v);
 restorePortfolio();
 const currentMonth = new Date();
 const defaultPurchaseMonth = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
 ['gPurchaseMonth', 'sPurchaseMonth'].forEach(id => { $(id).value = defaultPurchaseMonth; });
+$('fmon').value = defaultPurchaseMonth;
 drawSips(); drawMetalPurchases('gold'); drawMetalPurchases('silver'); render(); loadRates();
 setInterval(loadRates, 5 * 60 * 1000);   // auto-refresh every 5 min
 </script>
