@@ -15,6 +15,8 @@ h1,h2,.big{font-family:'Bricolage Grotesque',sans-serif;margin:0}
 .wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .status{font-size:13px;color:var(--mute)}
+.status-failed{color:var(--down);font-weight:700}
+.status-short,.refresh-icon{display:none}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--up);margin-right:6px}
 .dot.off{background:var(--down)}
 button{font:inherit;cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;color:var(--ink)}
@@ -26,7 +28,7 @@ button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 #portfolioSummaryDetails[hidden]{display:none}
 .hero[hidden]{display:none}
 .big{font-size:clamp(40px,7vw,68px);font-weight:800;letter-spacing:-1.5px;line-height:1}
-.sub{color:var(--mute);margin-top:8px}
+.sub{color:var(--mute);margin-top:10px;max-width:52ch}
 .empty-state{margin-top:12px;padding:10px 12px;border:1px dashed var(--line);border-radius:9px;color:var(--mute);font-size:13px}
 .empty-state[hidden],table[hidden]{display:none}
 .bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line);margin-top:16px}
@@ -80,6 +82,14 @@ td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left} th{co
 footer{margin-top:30px;color:var(--mute);font-size:13px;text-align:center}
 @media(max-width:760px){
   .wrap{padding:16px 12px 36px}
+  .top{align-items:flex-start;gap:6px}
+  .top h1{font-size:20px!important}
+  .status{display:flex;align-items:center;gap:5px;margin-top:2px;font-size:12px;white-space:nowrap}
+  .status .dot{width:7px;height:7px;margin-right:0;flex:0 0 auto}
+  .status-full,.refresh-label{display:none}
+  .status-short{display:inline}
+  .status button{padding:4px 7px;font-size:15px;line-height:1}
+  .refresh-icon{display:inline}
   .hero{grid-template-columns:1fr;gap:12px;margin:16px 0}
   .summary-rates{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
   .summary-rate{display:block;padding:9px 8px;min-width:0}
@@ -102,22 +112,22 @@ footer{margin-top:30px;color:var(--mute);font-size:13px;text-align:center}
 
 <div class="top">
   <h1 style="font-size:24px">Portfolio Tracker <span class="tag">Trichy, TN</span></h1>
-  <div class="status"><span class="dot off" id="dot"></span><span id="statusTxt">Loading rates…</span> <button id="retry" onclick="loadRates()">Refresh</button></div>
+  <div class="status"><span class="dot off" id="dot"></span><span class="status-full" id="statusTxt">Loading rates…</span><span class="status-short" id="statusShort" aria-hidden="true">Loading</span><button id="retry" onclick="loadRates()" aria-label="Refresh rates" title="Refresh rates"><span class="refresh-label">Refresh</span><span class="refresh-icon" aria-hidden="true">↻</span></button></div>
 </div>
 <div class="banner" id="banner"></div>
 
 <!-- NET WORTH -->
 <section class="hero" id="portfolioSummary">
   <div>
-    <div class="muted">Net worth (gold and silver at market value, SIPs at amount invested)</div>
+    <div class="muted">Net Worth</div>
     <div class="big" id="net">₹ 0</div>
-    <div class="sub" id="summaryHint">Add your first holding to see your portfolio allocation.</div>
     <div class="bar"><i id="bG" style="background:var(--gold);width:0"></i><i id="bS" style="background:var(--silver);width:0"></i><i id="bP" style="background:var(--sip);width:0"></i></div>
     <div class="legend">
       <span><span class="sw" style="background:var(--gold)"></span>Gold <b id="lG">0%</b></span>
       <span><span class="sw" style="background:var(--silver)"></span>Silver <b id="lS">0%</b></span>
       <span><span class="sw" style="background:var(--sip)"></span>SIPs <b id="lP">0%</b></span>
     </div>
+    <div class="sub" id="summaryHint">Gold and Silver use current rates; SIPs reflect recorded contributions. Add a holding to see your allocation.</div>
   </div>
   <div class="summary-rates" aria-label="Current metal rates">
     <div class="summary-rate"><span>Current Gold 24K rate</span><div class="summary-rate-value"><strong><b id="summaryG24">₹ --</b> <small>/g</small></strong><span class="summary-change" id="summaryG24Change" aria-label="Change from yesterday">--</span></div></div>
@@ -154,14 +164,14 @@ footer{margin-top:30px;color:var(--mute);font-size:13px;text-align:center}
 
   <div class="card">
     <h2 style="color:var(--sip)">SIP</h2>
-    <div class="kv"><span>Total invested</span><b id="sipTotal">₹ 0</b></div>
+    <div class="kv"><span>Total contributions</span><b id="sipTotal">₹ 0</b></div>
     <div class="purchase-form sip-form">
       <div><label for="fmon">Month</label><input id="fmon" type="month"></div>
-      <div><label for="fa">Amount invested (₹)</label><input id="fa" type="number" min="0" placeholder="e.g. ₹1000"></div>
+      <div><label for="fa">Contribution (₹)</label><input id="fa" type="number" min="0" placeholder="e.g. ₹1000"></div>
       <button class="on" onclick="addSip()">Add</button>
     </div>
     <div class="empty-state" id="sipEmpty">No SIP contributions yet. Add a month above to start tracking.</div>
-    <table class="sec" id="sipTable" hidden><thead><tr><th>Month</th><th>Invested</th><th></th></tr></thead><tbody id="sipBody"></tbody></table>
+    <table class="sec" id="sipTable" hidden><thead><tr><th>Month</th><th>Contribution</th><th></th></tr></thead><tbody id="sipBody"></tbody></table>
   </div>
 </div>
 
@@ -257,7 +267,7 @@ function restorePortfolio() {
       }
       openingBalances.gold = { grams: goldGrams, invested: goldInvested };
       openingBalances.silver = { grams: silverGrams, invested: silverInvested };
-    } else if (saved.version === 2 || saved.version === 3 || saved.version === 4) {
+    } else if (saved.version === 2 || saved.version === 3 || saved.version === 4 || saved.version === 5) {
       for (const metal of ['gold', 'silver']) {
         const opening = saved.openingBalances?.[metal];
         const purchases = saved.metalPurchases?.[metal];
@@ -277,7 +287,23 @@ function restorePortfolio() {
       Number.isFinite(point.gold) && point.gold > 0 &&
       Number.isFinite(point.silver) && point.silver > 0
     );
-    if (!currentData || saved.version < 4) savePortfolio();
+    if (saved.lastRates) {
+      const cached = saved.lastRates;
+      const updatedAt = new Date(cached.ts);
+      if (![cached.g24, cached.g24prev, cached.s, cached.sprev].every(value => Number.isFinite(value) && value > 0) ||
+          Number.isNaN(updatedAt.getTime())) {
+        throw new Error('Saved rate cache has an invalid format.');
+      }
+      rates = {
+        g24: cached.g24,
+        g24prev: cached.g24prev,
+        s: cached.s,
+        sprev: cached.sprev,
+        hist: historyCache,
+        ts: updatedAt
+      };
+    }
+    if (!currentData || saved.version < 5) savePortfolio();
   } catch (error) {
     console.error('Could not restore saved portfolio data.', error);
     setStorageNotice('Could not read saved data from this browser. Your changes may not persist.');
@@ -286,12 +312,21 @@ function restorePortfolio() {
 function savePortfolio() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      version: 4,
+      version: 5,
       openingBalances,
       metalPurchases,
       metalSel,
       sips,
-      history: historyCache
+      history: historyCache,
+      ...(rates ? {
+        lastRates: {
+          g24: rates.g24,
+          g24prev: rates.g24prev,
+          s: rates.s,
+          sprev: rates.sprev,
+          ts: rates.ts.toISOString()
+        }
+      } : {})
     }));
     if (storageNotice.startsWith('Could not save') || storageNotice.startsWith('Could not read')) setStorageNotice('');
   } catch (error) {
@@ -367,14 +402,18 @@ async function loadRates() {
     try { const r = await fetch('/.netlify/functions/rates'); if (!r.ok) throw 0; d = await r.json(); if (d.source !== 'live') throw 0; }
     catch (_) { d = await scrapeInBrowser(); }
     historyCache = mergeHistory(historyCache, d.history || d.history7 || []);
-    rates = { g24: d.gold.price, g24prev: d.gold.prevClose, s: d.silver.price, sprev: d.silver.prevClose, hist: historyCache, ts: new Date() };
+    const updatedAt = d.asOfIso ? new Date(d.asOfIso) : new Date();
+    if (Number.isNaN(updatedAt.getTime())) throw new Error('Rate source returned an invalid update time.');
+    rates = { g24: d.gold.price, g24prev: d.gold.prevClose, s: d.silver.price, sprev: d.silver.prevClose, hist: historyCache, ts: updatedAt };
     rateLoadState = 'loaded';
     savePortfolio();
     if (!storageNotice) $('banner').style.display = 'none';
   } catch (e) {
     rateLoadState = 'error';
     $('banner').style.display = 'block';
-    $('banner').textContent = storageNotice + (storageNotice ? ' ' : '') + (rates ? 'Could not refresh. Showing the last rates fetched at ' + rates.ts.toLocaleTimeString() + '. ' : 'Could not load Trichy rates. ') + '(' + (e.message || 'network error') + ')';
+    $('banner').textContent = storageNotice + (storageNotice ? ' ' : '') +
+      (rates ? 'Could not refresh rates. Showing the last successful rates from ' + rates.ts.toLocaleTimeString() + '. '
+        : 'Could not load rates. ') + '(' + (e.message || 'network error') + ')';
   }
   render(); drawHistory();
 }
@@ -385,8 +424,19 @@ const gramSilver = () => rates ? rates.s : 0;
 /* ===== MAIN RENDER ===== */
 function render() {
   const live = !!rates;
-  $('dot').className = 'dot' + (live ? '' : ' off');
-  $('statusTxt').textContent = live ? 'Updated ' + rates.ts.toLocaleTimeString() : 'No rates yet';
+  $('dot').className = 'dot' + (live && rateLoadState === 'loaded' ? '' : ' off');
+  $('statusTxt').className = 'status-full' + (rateLoadState === 'error' ? ' status-failed' : '');
+  $('statusTxt').textContent = rateLoadState === 'loading'
+    ? live ? 'Refreshing · Last rates from ' + rates.ts.toLocaleTimeString() : 'Loading rates…'
+    : rateLoadState === 'error'
+      ? live ? 'Refresh failed · Rates from ' + rates.ts.toLocaleTimeString() : 'Rates unavailable'
+      : live ? 'Live · Updated at ' + rates.ts.toLocaleTimeString() : 'Rates unavailable';
+  $('statusShort').textContent = rateLoadState === 'loading'
+    ? live ? 'Stale' : 'Loading'
+    : rateLoadState === 'error'
+      ? live ? 'Stale' : 'Offline'
+      : live ? 'Live · ' + rates.ts.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'Offline';
+  $('statusShort').title = $('statusTxt').textContent;
 
   const gp = gramGold(), sp = gramSilver();
   const updateRate = (priceId, changeId, price, change) => {
@@ -411,10 +461,11 @@ function render() {
   const valuationReady = live || (goldTotals.grams === 0 && silverTotals.grams === 0);
   const net = gV + sV + sipTotal;
   $('net').textContent = valuationReady ? inr(net) : 'Loading…';
-  $('summaryHint').hidden = valuationReady && net > 0;
-  $('summaryHint').textContent = valuationReady
-    ? 'Add your first holding to see your portfolio allocation.'
-    : 'Loading current rates to calculate your net worth.';
+  $('summaryHint').textContent = valuationReady && net > 0
+    ? 'Gold and Silver use current rates; SIPs reflect recorded contributions.'
+    : valuationReady
+      ? 'Gold and Silver use current rates; SIPs reflect recorded contributions. Add a holding to see your allocation.'
+      : 'Gold and Silver use current rates; SIPs reflect recorded contributions. Loading rates to calculate your net worth.';
 
   const p = v => valuationReady && net ? v / net * 100 : 0;
   [['G', gV], ['S', sV], ['P', sipTotal]].forEach(([k, v]) => { $('b' + k).style.width = p(v) + '%'; $('l' + k).textContent = p(v).toFixed(2) + '%'; });
@@ -481,6 +532,8 @@ const monLabel = m => new Date(m + '-01').toLocaleDateString('en-IN', { month: '
 function addSip() {
   const m = $('fmon').value, amt = num('fa');
   if (!m || amt <= 0) return alert('Pick a month and enter the amount.');
+  const existing = sips.find(s => s.m === m);
+  if (existing && !window.confirm(`${monLabel(m)} already has a contribution of ${inr(existing.amt)}. Replace it with ${inr(amt)}?`)) return;
   sips = sips.filter(s => s.m !== m).concat({ m, amt }).sort((a, b) => a.m.localeCompare(b.m));
   $('fa').value = '';
   savePortfolio();
@@ -534,12 +587,14 @@ function drawHistory() {
     $('histNote').textContent = rateLoadState === 'loading'
       ? 'Loading price history…'
       : rateLoadState === 'error'
-        ? 'Price history could not load. Refresh to try again.'
+        ? 'Price history could not refresh. Refresh to try again.'
         : 'No price history available for the past 7 days.';
     return;
   }
   $('historyChartBox').hidden = false;
-  $('histNote').textContent = 'Daily rates · Past 7 days · Rates per gram.';
+  $('histNote').textContent = rateLoadState !== 'loaded'
+    ? 'Showing saved price history · Past 7 days · Rates per gram.'
+    : 'Daily rates · Past 7 days · Rates per gram.';
   const series = metalSel === 'gold'
     ? [['Gold 24K', 'gold24', COLORS.g24], ['Gold 22K', 'gold22', COLORS.g22]]
     : [[metalSel === 's' ? 'Silver' : 'Portfolio', metalSel === 's' ? 'silver' : 'portfolio', COLORS[metalSel === 's' ? 's' : 'p']]];
