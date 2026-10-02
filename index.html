@@ -1,1432 +1,518 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WealthControl – Gold & Silver Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:          #060810;
-      --surface:     #0c1020;
-      --surface2:    #111827;
-      --border:      rgba(255,255,255,0.07);
-      --border-soft: rgba(255,255,255,0.04);
-      --text:        #e8edf8;
-      --muted:       #7c8da8;
-      --dim:         #4e5d73;
-      --gain:        #10b981;
-      --gain-bg:     rgba(16,185,129,0.10);
-      --loss:        #ef4444;
-      --loss-bg:     rgba(239,68,68,0.10);
-      --gold:        #f59e0b;
-      --gold-dim:    #b07208;
-      --gold-bg:     rgba(245,158,11,0.07);
-      --silver:      #94a3b8;
-      --silver-dim:  #4f6075;
-      --silver-bg:   rgba(148,163,184,0.07);
-      --accent:      #6366f1;
-      --accent-bg:   rgba(99,102,241,0.12);
-      --amber:       #f59e0b;
-      --r-lg: 18px;
-      --r-md: 12px;
-      --r-sm: 8px;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      min-height: 100vh;
-      padding: 28px 16px 48px;
-      background-image:
-        radial-gradient(ellipse 900px 500px at 50% -80px, rgba(99,102,241,0.06) 0%, transparent 70%),
-        radial-gradient(ellipse 600px 400px at -5% 30%, rgba(245,158,11,0.04) 0%, transparent 65%),
-        radial-gradient(ellipse 600px 400px at 105% 30%, rgba(148,163,184,0.04) 0%, transparent 65%);
-    }
-
-    .wrap { max-width: 1140px; margin: 0 auto; }
-    .container { max-width: 1140px; margin: 0 auto; padding: 0; }
-
-    /* ── Typography helpers ── */
-    .label { font-size: 0.72rem; letter-spacing: 0.11em; text-transform: uppercase; color: var(--muted); }
-    .mono  { font-family: 'DM Mono', monospace; }
-    .sora  { font-family: 'Outfit', sans-serif; }
-
-    /* ── Card ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--r-lg);
-      padding: clamp(18px, 2.5vw, 28px);
-      margin-bottom: 14px;
-      position: relative;
-      overflow: hidden;
-    }
-    .card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: linear-gradient(135deg, rgba(255,255,255,0.025) 0%, transparent 50%);
-      pointer-events: none;
-    }
-    .card.gold-accent  { border-color: rgba(245,158,11,0.22); background: linear-gradient(160deg, rgba(245,158,11,0.4) 0%, var(--surface) 65%); }
-    .card.silver-accent{ border-color: rgba(148,163,184,0.18); background: linear-gradient(160deg, rgba(148,163,184,0.38) 0%, var(--surface) 65%); }
-    .card.primary-accent { border-left: none; }
-
-    /* ── Error Banner ── */
-    .error-banner {
-      display: none; align-items: center; justify-content: space-between;
-      gap: 12px; padding: 12px 16px; border-radius: var(--r-md);
-      border: 1px solid rgba(239,68,68,0.3); background: var(--loss-bg);
-      color: #fca5a5; font-size: 0.82rem; margin-bottom: 14px;
-    }
-    .error-banner.visible { display: flex; }
-
-    /* ── Portfolio Header ── */
-    .portfolio-header {
-      display: grid;
-      grid-template-columns: minmax(320px, 1.05fr) minmax(320px, 0.95fr) minmax(300px, auto);
-      align-items: stretch;
-      gap: 22px;
-    }
-    .portfolio-stats { min-width: 0; }
-    .portfolio-section {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: var(--r-md);
-      padding: 16px 18px;
-      min-height: 0;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-    }
-    .portfolio-middle {
-      min-width: 0;
-      padding-top: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      gap: 10px;
-    }
-    .panel-heading {
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.98rem;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.25;
-      letter-spacing: 0;
-      text-transform: none;
-      margin: 0 0 14px;
-    }
-    .section-kicker,
-    .stat-label {
-      font-family: inherit;
-      font-size: inherit;
-      font-weight: inherit;
-      color: inherit;
-      line-height: inherit;
-      letter-spacing: inherit;
-      text-transform: inherit;
-      margin: inherit;
-    }
-    .portfolio-middle .panel-heading,
-    .portfolio-right .panel-heading {
-      margin-top: 4px;
-    }
-    .alloc-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin: 0 0 10px;
-    }
-    .alloc-item {
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      display: inline-flex;
-      align-items: baseline;
-      gap: 6px;
-    }
-    .alloc-track {
-      width: 100%;
-      height: 14px;
-      border-radius: 999px;
-      overflow: hidden;
-      display: flex;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.06);
-    }
-    .alloc-bar {
-      height: 100%;
-      transition: width 0.4s ease;
-      min-width: 0;
-    }
-    .alloc-bar.gold {
-      background: linear-gradient(90deg, rgba(245,158,11,0.7), rgba(245,158,11,0.9));
-    }
-    .alloc-bar.silver {
-      background: linear-gradient(90deg, rgba(148,163,184,0.75), rgba(148,163,184,0.92));
-    }
-    .alloc-details {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px 14px;
-      margin-top: 10px;
-    }
-    .alloc-detail {
-      font-size: 0.72rem;
-      color: var(--muted);
-      letter-spacing: 0.03em;
-      line-height: 1.4;
-    }
-    .alloc-detail strong {
-      display: block;
-      margin-top: 3px;
-      color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      letter-spacing: 0;
-    }
-    .portfolio-right {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      min-width: 0;
-      padding-top: 0;
-      align-items: stretch;
-      justify-content: flex-start;
-    }
-    .trade-head {
-      display: flex;
-      justify-content: flex-start;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-    .controls-kicker { margin: 0; }
-    .trade-location {
-      margin-left: auto;
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-    .control-line {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .portfolio-controls {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 8px;
-      padding: 0;
-    }
-
-    .stat-block { margin: 0; padding: 0; }
-    .stat-value {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin-bottom: 14px;
-      word-break: break-word;
-    }
-    .stat-change { font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-    .stat-meta { font-size: 0.82rem; color: var(--dim); margin-top: 4px; }
-    .location-badge { font-size: 0.72rem; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; display: inline-flex; gap: 8px; align-items: center; padding: 4px 8px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; }
-    .badge-dot { display: none; }
-
-    /* ── Buttons ── */
-    .btn {
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 700;
-      border: none;
-      border-radius: var(--r-sm);
-      padding: 9px 18px;
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: 0.1em;
-      display: inline-flex;
-      align-items: center;
-      text-transform: uppercase;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-    }
-    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .btn-secondary {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
-    .btn-secondary:hover { opacity: 0.8; }
-    .btn-secondary.active { border-color: var(--gain); color: var(--gain); background: var(--gain-bg); }
-
-    .btn-toggle-group {
-      display: inline-grid;
-      grid-template-columns: auto auto;
-      gap: 0;
-      width: auto;
-      padding: 2px;
-      border-radius: 9px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.02);
-      flex: 1;
-    }
-    .btn-toggle-group .btn {
-      justify-content: center;
-      width: auto;
-      min-width: 72px;
-      border-radius: 7px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      padding: 8px 10px;
-    }
-    .btn-toggle-group .btn.btn-secondary.active {
-      background: rgba(99,102,241,0.18);
-      color: #fff;
-      box-shadow: inset 0 0 0 1px rgba(99,102,241,0.35);
-      border-color: rgba(99,102,241,0.35);
-    }
-
-    .control-line {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-
-    .control-status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: auto;
-    }
-
-    .btn-refresh {
-      width: 36px;
-      height: 36px;
-      justify-content: center;
-      min-width: 0;
-      padding: 0;
-      border-radius: 999px;
-      font-size: 1rem;
-      letter-spacing: 0.04em;
-      line-height: 1;
-    }
-
-    .source-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: var(--text);
-      font-size: 0.7rem;
-      letter-spacing: 0.11em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .source-chip.live {
-      background: rgba(16,185,129,0.14);
-      border-color: rgba(16,185,129,0.25);
-      color: #86efac;
-    }
-    .source-chip.fallback {
-      background: rgba(239,68,68,0.12);
-      border-color: rgba(239,68,68,0.2);
-      color: #fecaca;
-    }
-    .ratio-guide {
-      padding-top: 12px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-    }
-    .ratio-guide-panel {
-      display: grid;
-      gap: 10px;
-    }
-    .trade-signal {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: 12px 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 18px;
-      background: rgba(255,255,255,0.03);
-      min-height: auto;
-    }
-    .trade-signal-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-    .trade-signal-details {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 0;
-    }
-    .trade-signal-label {
-      font-size: 0.72rem;
-      color: var(--muted);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-    .trade-signal-value {
-      font-family: 'Outfit', sans-serif;
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1;
-      color: var(--text);
-    }
-    .trade-action-pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      min-width: 108px;
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      color: var(--text);
-      font-size: 0.74rem;
-      font-weight: 700;
-      letter-spacing: 0.11em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .trade-action-pill.buy {
-      background: rgba(245,158,11,0.12);
-      border-color: rgba(245,158,11,0.2);
-      color: var(--gold);
-    }
-    .trade-action-pill.sell {
-      background: rgba(148,163,184,0.14);
-      border-color: rgba(148,163,184,0.22);
-      color: var(--silver);
-    }
-    .trade-action-pill.hold {
-      background: rgba(99,102,241,0.12);
-      border-color: rgba(99,102,241,0.22);
-      color: #dbeafe;
-    }
-    .trade-action-icon {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: currentColor;
-      display: inline-block;
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.12);
-    }
-    .trade-note {
-      font-size: 0.76rem;
-      color: var(--muted);
-      line-height: 1.6;
-      letter-spacing: 0.02em;
-      margin: 0;
-      padding: 0 2px 6px;
-    }
-
-    .location-badge {
-      justify-content: center;
-      width: auto;
-      min-width: 108px;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.02);
-      font-size: 0.66rem;
-      letter-spacing: 0.08em;
-    }
-
-    /* ── Metals Grid ── */
-    .metals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-
-    .metal-card { display: flex; flex-direction: column; }
-    .metal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-    .metal-title { font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0; font-weight: 700; }
-    .metal-title.gold { color: var(--gold); }
-    .metal-title.silver { color: var(--silver); }
-
-    .rate-badge {
-      font-size: 0.72rem; font-weight: 600;
-      padding: 4px 10px; border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.03);
-      white-space: nowrap;
-    }
-
-    .metal-price-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 18px; gap: 10px; }
-    .metal-price {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(1.5rem, 3vw, 2.4rem);
-      font-weight: 800; letter-spacing: -0.02em; line-height: 1.2;
-      word-break: break-word;
-    }
-    .metal-price.gold { color: var(--gold); }
-    .metal-price.silver { color: var(--silver); }
-
-    .metal-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border-soft); }
-
-    .metal-field { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-    .metal-field-label { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0; font-weight: 700; color: var(--text); }
-
-    .metal-input {
-      background: rgba(0,0,0,0.35);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: var(--r-sm);
-      color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.4rem; font-weight: 700;
-      padding: 10px 12px;
-      width: 100%; max-width: 140px; outline: none;
-      transition: border-color 0.2s;
-    }
-    .metal-input:focus { border-color: var(--accent); }
-    .metal-hint { font-size: 0.65rem; color: var(--dim); margin-top: 3px; }
-
-    .metal-valuation {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(1.4rem, 2.6vw, 2.1rem);
-      font-weight: 800; line-height: 1.1;
-      letter-spacing: -0.02em;
-      word-break: break-word;
-    }
-    .metal-change { font-size: 0.82rem; font-weight: 600; margin-top: 4px; }
-
-    /* ── Section Headers ── */
-    .section-header { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text); margin-bottom: 12px; margin-top: 16px; padding-top: 12px; padding-bottom: 8px; border-top: 2px solid var(--border); border-bottom: 1px solid var(--border-soft); font-weight: 700; }
-    .section-header.no-top-divider { margin-top: 14px; padding-top: 0; border-top: none; }
-    .section-toggle {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      background: none;
-      text-align: left;
-      cursor: pointer;
-      border-left: none;
-      border-right: none;
-      outline: none;
-    }
-    .section-toggle .section-chevron {
-      font-size: 0.85rem;
-      color: var(--muted);
-      line-height: 1;
-      transition: transform 0.2s ease, color 0.2s ease;
-      transform-origin: center;
-    }
-    .section-toggle[aria-expanded="true"] .section-chevron {
-      transform: rotate(180deg);
-      color: var(--text);
-    }
-    .section-collapsible {
-      display: grid;
-      grid-template-rows: 0fr;
-      opacity: 0;
-      transition: grid-template-rows 0.25s ease, opacity 0.2s ease;
-    }
-    .section-collapsible.active {
-      grid-template-rows: 1fr;
-      opacity: 1;
-    }
-    .section-collapsible-inner {
-      overflow: hidden;
-      min-height: 0;
-    }
-
-    /* ── Calc Section ── */
-    .calc-section { margin-top: 0; padding-top: 0; padding-bottom: 12px; border-top: none; border-bottom: 1px solid var(--border-soft); }
-    .calc-header { display: flex; gap: 6px; margin-bottom: 10px; }
-    .calc-input-result-row { display: flex; gap: 10px; align-items: flex-start; }
-    .calc-btn {
-      font-size: 0.68rem; letter-spacing: 0.06em; padding: 6px 12px;
-      border: 1px solid rgba(255,255,255,0.10); border-radius: var(--r-sm);
-      background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s;
-      white-space: nowrap;
-    }
-    .calc-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 0 12px rgba(99, 102, 241, 0.4); }
-
-    .calc-input-wrap { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-    .calc-input {
-      width: 100%; background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: var(--r-sm); color: var(--text);
-      font-family: 'Outfit', sans-serif; font-size: 0.92rem;
-      padding: 8px 10px; outline: none; transition: border-color 0.2s;
-    }
-    .calc-input:focus { border-color: var(--accent); }
-    .calc-unit { font-size: 0.78rem; color: var(--muted); min-width: 14px; display: none; }
-
-    .calc-result {
-      flex: 1;
-      margin-top: 0; padding: 10px 12px;
-      border-radius: var(--r-sm);
-      font-size: 0.72rem; color: var(--muted);
-      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06);
-      transition: all 0.25s;
-    }
-    .calc-result.has-value { background: var(--gain-bg); border-color: rgba(16,185,129,0.25); color: #6ee7b7; }
-    .calc-result-val { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95rem; margin-top: 3px; color: var(--text); }
-    .calc-result.has-value .calc-result-val { color: #ecfdf5; }
-
-    .calc-input-box {
-      padding: 10px 12px;
-      border-radius: var(--r-sm);
-      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    /* ── Invested Tracker ── */
-    .invested-section { margin-top: 0; padding-top: 0; padding-bottom: 12px; border-top: none; border-bottom: 1px solid var(--border-soft); }
-    .invested-toggle { display: flex; align-items: center; gap: 7px; font-size: 0.72rem; color: var(--muted); cursor: pointer; user-select: none; margin-bottom: 10px; }
-    .invested-toggle input { accent-color: var(--accent); }
-    .invested-body { display: none; margin-top: 0; padding: 12px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--r-sm); }
-    .invested-body.active { display: block; }
-    .invested-input {
-      width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: var(--r-sm); color: var(--text); font-family: 'Outfit', sans-serif;
-      font-size: 0.92rem; padding: 8px 10px; outline: none; transition: border-color 0.2s; margin-top: 8px;
-    }
-    .invested-input:focus { border-color: var(--accent); }
-    .invested-note { font-size: 0.65rem; color: var(--dim); margin-top: 4px; }
-    .returns-box {
-      margin-top: 8px; padding: 9px 12px;
-      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
-      border-radius: var(--r-sm); font-size: 0.75rem; line-height: 1.6; display: none;
-    }
-    .returns-box.active { display: block; }
-
-    /* ── Rates Table ── */
-    .rates-section { overflow-x: auto; }
-    .rates-table {
-      width: 100%; min-width: 680px; border-collapse: collapse;
-      font-size: 0.78rem;
-    }
-    .rates-table th, .rates-table td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--border-soft); }
-    .rates-table th:first-child, .rates-table td:first-child { text-align: left; }
-    .rates-table thead th { color: var(--muted); font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; font-size: 0.68rem; }
-    .rates-table tbody tr:nth-child(odd) { background: rgba(255,255,255,0.015); }
-    .rates-table tr:last-child td { border-bottom: none; }
-    .metal-name { color: var(--gold); font-weight: 600; }
-    .metal-name.gold  { color: var(--gold); }
-    .metal-name.silver{ color: var(--silver); }
-
-    /* ── GSR Section ── */
-    .gsr-section {
-      border: 1px solid rgba(255,255,255,0.08);
-      background: linear-gradient(180deg, rgba(18,24,42,0.95) 0%, rgba(12,16,30,0.98) 100%);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 16px 30px rgba(0,0,0,0.22);
-    }
-    .gsr-top {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 16px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .gsr-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.02rem;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-      line-height: 1.2;
-    }
-    .gsr-metrics {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin-bottom: 16px;
-    }
-    .gsr-metric {
-      min-width: 0;
-      padding: 0;
-    }
-    .gsr-label {
-      font-size: 0.62rem;
-      color: var(--muted);
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-    .gsr-value {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(1.52rem, 2.9vw, 2.15rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1.05;
-    }
-    .gsr-value-muted { color: #b6c1d6; }
-    .bar-section {
-      margin-bottom: 0;
-      padding: 0;
-      border: none;
-      background: transparent;
-    }
-    .bar-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.65rem;
-      color: var(--muted);
-      margin-top: 10px;
-      letter-spacing: 0.01em;
-    }
-    .bar-track {
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.10);
-      overflow: hidden;
-    }
-    .bar-fill { height: 100%; border-radius: 999px; transition: width 0.7s cubic-bezier(0.4,0,0.2,1); }
-    .btn-signal  {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: none;
-      border-radius: 999px;
-      padding: 7px 14px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      line-height: 1;
-      text-align: center;
-      cursor: pointer;
-      text-transform: uppercase;
-      white-space: nowrap;
-      min-width: 124px;
-      border: 1px solid rgba(255,255,255,0.12);
-      transition: transform 0.15s ease, filter 0.2s ease, border-color 0.2s ease;
-    }
-    .btn-signal:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.03);
-      border-color: rgba(255,255,255,0.22);
-    }
-    .btn-signal:active {
-      transform: translateY(0);
-    }
-
-    /* ── Color Utils ── */
-    .gain { color: var(--gain); }
-    .loss { color: var(--loss); }
-    .gold-col { color: var(--gold); }
-    .silver-col { color: var(--silver); }
-    .amber { color: var(--amber); }
-
-    /* ── Skeleton ── */
-    .sk {
-      color: transparent !important;
-      border-radius: 6px;
-      background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.13) 50%, rgba(255,255,255,0.06) 75%);
-      background-size: 250% 100%;
-      animation: shimmer 1.4s ease infinite;
-      pointer-events: none; user-select: none;
-    }
-    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-
-    /* ── Footer ── */
-    .footer { text-align: center; margin-top: 28px; font-size: 0.65rem; color: var(--dim); letter-spacing: 0.09em; text-transform: uppercase; }
-
-    /* ── Responsive ── */
-    @media(max-width: 900px) {
-      .portfolio-header { grid-template-columns: 1fr; gap: 14px; }
-      .portfolio-section { min-height: 0; }
-      .portfolio-middle { padding-top: 0; }
-      .alloc-details { grid-template-columns: 1fr; }
-      .trade-head { gap: 8px; }
-      .trade-location { margin-left: 0; }
-      .control-line { width: 100%; }
-      .btn-refresh { width: auto; min-width: 0; }
-      .btn-toggle-group { width: auto; flex: 1; }
-      .metals-grid { grid-template-columns: 1fr; }
-      .gsr-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    @media(max-width: 660px) {
-      body { padding: 18px 12px 34px; }
-      .card { padding: 16px; }
-
-      .portfolio-header { gap: 14px; }
-      .portfolio-right { padding-top: 0; }
-      .portfolio-controls { align-items: stretch; width: 100%; }
-      .portfolio-controls > * { width: 100%; }
-      .trade-head { justify-content: space-between; width: 100%; }
-      .trade-location { margin-left: 0; }
-      .control-line { width: 100%; }
-      .btn-toggle-group { width: auto; grid-template-columns: 1fr 1fr; }
-      .btn-toggle-group .btn { width: 100%; min-width: 0; }
-      .portfolio-section { padding: 14px; }
-
-      .stat-value { font-size: clamp(1.7rem, 8vw, 2.2rem); }
-      .stat-change { flex-wrap: wrap; row-gap: 2px; }
-
-      .metal-row { flex-direction: column; align-items: stretch; gap: 10px; }
-      .metal-field { width: 100%; }
-      .metal-input { width: 100%; max-width: none; }
-
-      .calc-input-result-row { flex-direction: column; align-items: stretch; }
-      .calc-input-box, .calc-result { width: 100%; }
-
-      .gsr-top { flex-direction: row; align-items: center; gap: 10px; }
-      .gsr-metrics { grid-template-columns: 1fr; gap: 12px; }
-      .bar-labels { font-size: 0.58rem; }
-      .btn-signal { width: auto; min-width: 0; padding: 7px 12px; }
-
-      .error-banner { flex-direction: column; align-items: flex-start; }
-      .error-banner .btn { width: 100%; justify-content: center; }
-    }
-    @media(max-width: 420px) {
-      .section-header { font-size: 0.72rem; letter-spacing: 0.1em; }
-      .calc-header { display: grid; grid-template-columns: 1fr 1fr; }
-      .calc-btn { width: 100%; text-align: center; }
-      .bar-labels span:nth-child(2) { display: none; }
-      .footer { letter-spacing: 0.06em; }
-    }
-    @media(max-width: 360px) {
-      body { padding: 14px 10px 28px; }
-      .card { padding: 13px; border-radius: 14px; }
-
-      .btn { font-size: 0.72rem; letter-spacing: 0.08em; padding: 8px 12px; }
-      .source-chip, .location-badge { font-size: 0.62rem; letter-spacing: 0.08em; }
-
-      .stat-label { font-size: 0.92rem; margin-bottom: 10px; }
-      .stat-value { font-size: clamp(1.45rem, 8vw, 1.85rem); margin-bottom: 8px; }
-      .stat-change { font-size: 0.82rem; }
-      .stat-meta { font-size: 0.74rem; }
-
-      .metal-title { font-size: 0.75rem; letter-spacing: 0.1em; }
-      .rate-badge { font-size: 0.64rem; padding: 3px 8px; }
-      .metal-price { font-size: clamp(1.25rem, 7vw, 1.7rem); }
-      .metal-input { font-size: 1.15rem; padding: 8px 10px; }
-      .metal-valuation { font-size: clamp(1.2rem, 6.6vw, 1.55rem); }
-      .metal-change { font-size: 0.75rem; }
-
-      .section-header { margin-top: 12px; margin-bottom: 10px; padding-bottom: 7px; }
-      .calc-btn { font-size: 0.62rem; padding: 6px 8px; }
-      .calc-input, .invested-input { font-size: 0.84rem; padding: 7px 9px; }
-      .calc-result { padding: 9px 10px; font-size: 0.66rem; }
-      .calc-result-val { font-size: 0.86rem; }
-
-      .gsr-title { font-size: 0.92rem; }
-      .gsr-value { font-size: clamp(1.35rem, 6.8vw, 1.9rem); }
-      .bar-labels { font-size: 0.55rem; }
-      .btn-signal { font-size: 0.68rem; padding: 6px 10px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="favicon.png">
+<title>Ledgerline – Gold, Silver & SIP tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#eef1f4;--card:#fff;--ink:#14213d;--mute:#667085;--line:#dde2e8;--gold:#c28e0e;--silver:#7d8799;--sip:#1f7a6d;--up:#15803d;--down:#b42318}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 'DM Sans',system-ui,sans-serif}
+h1,h2,.big{font-family:'Bricolage Grotesque',sans-serif;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.status{font-size:13px;color:var(--mute)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--up);margin-right:6px}
+.dot.off{background:var(--down)}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;color:var(--ink)}
+button:hover{border-color:var(--ink)} button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.banner{display:none;margin:12px 0;padding:10px 14px;border-radius:8px;background:#fff4e5;border:1px solid #f5c26b;font-size:14px}
+.hero{margin:22px 0 18px;display:grid;grid-template-columns:1.4fr 1fr;gap:20px;align-items:center}
+.hero>*{min-width:0}
+.hero .chartbox{width:100%;min-width:0}
+#portfolioSummaryDetails[hidden]{display:none}
+.hero[hidden]{display:none}
+.big{font-size:clamp(40px,7vw,68px);font-weight:800;letter-spacing:-1.5px;line-height:1}
+.sub{color:var(--mute);margin-top:8px}
+.bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line);margin-top:16px}
+.bar i{display:block;transition:width .4s}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:13px;color:var(--mute)}
+.legend b{color:var(--ink)} .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:16px}
+.utility-grid{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.2fr);gap:16px;margin-top:16px;align-items:stretch}
+.utility-grid>.card{min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card h2{font-size:19px;margin-bottom:4px}
+.rate{font-size:28px;font-weight:700;font-family:'Bricolage Grotesque'}
+.metal-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px}
+.purity-control{width:auto;flex:0 0 auto}
+.purity-control select{width:auto;min-width:82px;padding:6px 8px}
+.muted{color:var(--mute);font-size:13px}
+label{display:block;font-size:13px;color:var(--mute);margin:12px 0 4px}
+input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.purchase-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:end;margin-top:14px}
+.purchase-form label{margin-top:0}
+.purchase-form input{min-width:0}
+.purchase-form button{grid-column:1/-1}
+.purchase-form+table{margin-top:10px}
+.sip-form{grid-template-columns:1fr;margin-top:4px}
+.sip-submit{width:100%;margin-top:10px}
+.kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)} .kv:last-child{border:0}
+.up{color:var(--up)} .down{color:var(--down)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.sec{margin-top:16px} table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left} th{color:var(--mute);font-weight:500;font-size:13px}
+.x{border:0;color:var(--down);padding:2px 8px}
+.chartbox{position:relative;height:260px;margin-top:10px}
+.chartbox canvas{max-width:100%}
+.tag{font-size:12px;background:#eef1f4;border-radius:6px;padding:2px 8px;color:var(--mute)}
+footer{margin-top:30px;color:var(--mute);font-size:13px;text-align:center}
+@media(max-width:760px){.hero{grid-template-columns:1fr}.utility-grid{grid-template-columns:1fr}}
+@media(max-width:380px){.metal-title{gap:8px}.purity-control select{min-width:74px}}
+.hero[hidden]{display:none}
+</style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- Error Banner -->
-  <div id="errorBanner" class="error-banner" role="alert">
-    <span id="errorText">Could not refresh rates.</span>
-    <button class="btn btn-secondary" onclick="refreshRates()" style="padding: 6px 12px; font-size: 12px;">Retry</button>
-  </div>
+<div class="top">
+  <h1 style="font-size:24px">Ledgerline <span class="tag">Trichy, TN</span></h1>
+  <div class="status"><span class="dot off" id="dot"></span><span id="statusTxt">Loading rates…</span> <button id="retry" onclick="loadRates()">Refresh</button></div>
+</div>
+<div class="banner" id="banner"></div>
 
-  <!-- Portfolio Header Section -->
-  <div class="card primary-accent">
-    <div class="portfolio-header">
-      <div class="portfolio-stats portfolio-section">
-        <div class="stat-block">
-          <div class="panel-heading">Net Portfolio Valuation</div>
-          <div class="stat-value" id="totalVal">₹ --</div>
-          <div class="stat-change" id="totalChange"><span style="color: var(--text-muted);">--</span></div>
-          <div class="stat-meta" id="prevClose">Previous Close: --</div>
-          <div class="stat-meta" id="asOf">As of --</div>
-        </div>
-      </div>
-      <div class="portfolio-middle portfolio-section">
-        <div class="panel-heading">Allocation</div>
-        <div class="alloc-row">
-          <div class="alloc-item gold-col">Gold <span id="allocGoldPct">--%</span></div>
-          <div class="alloc-item silver-col">Silver <span id="allocSilverPct">--%</span></div>
-        </div>
-        <div class="alloc-track">
-          <div class="alloc-bar gold" id="allocGoldBar" style="width:0%"></div>
-          <div class="alloc-bar silver" id="allocSilverBar" style="width:0%"></div>
-        </div>
-        <div class="alloc-details">
-          <div class="alloc-detail">
-            Gold Allocated
-            <strong id="allocGoldVal">₹ --</strong>
-          </div>
-          <div class="alloc-detail">
-            Silver Allocated
-            <strong id="allocSilverVal">₹ --</strong>
-          </div>
-        </div>
-      </div>
-      <div class="portfolio-right portfolio-section">
-        <div class="trade-head">
-          <div class="panel-heading controls-kicker">Trade Controls</div>
-          <div class="trade-location">Trichy, TN</div>
-        </div>
-        <div class="portfolio-controls">
-          <div class="control-line">
-            <div class="btn-toggle-group" role="group" aria-label="Trade mode">
-              <button class="btn btn-secondary active" id="buyBtn" onclick="setMode('buy')" type="button">Buy</button>
-              <button class="btn btn-secondary" id="sellBtn" onclick="setMode('sell')" type="button">Sell</button>
-            </div>
-            <div class="control-status">
-              <button class="btn btn-secondary btn-refresh" id="refreshBtn" onclick="refreshRates()" type="button" aria-label="Refresh rates">↻</button>
-              <span class="source-chip live" id="sourceChip">● Live</span>
-            </div>
-          </div>
-
-          <div class="ratio-guide">
-            <div class="panel-heading">Gold/Silver Ratio Guide</div>
-            <div class="ratio-guide-panel">
-              <div class="trade-signal">
-                <div class="trade-signal-top">
-                  <div class="trade-signal-details">
-                    <span class="trade-signal-label">Current ratio</span>
-                    <strong class="trade-signal-value" id="tradeRatio">--</strong>
-                  </div>
-                  <span class="trade-action-pill" id="tradeAction">
-                    <span class="trade-action-icon"></span>
-                    <span class="trade-action-text">--</span>
-                  </span>
-                </div>
-                <div class="trade-note" id="tradeNote">Buy uses spot price.</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<!-- NET WORTH -->
+<section class="hero" id="portfolioSummary">
+  <div>
+    <div class="muted">Net worth (gold + silver at market, SIPs at amount invested)</div>
+    <div class="big" id="net">₹ --</div>
+    <div class="sub" id="netPnl">Add your holdings below to see profit and loss.</div>
+    <div class="bar"><i id="bG" style="background:var(--gold);width:0"></i><i id="bS" style="background:var(--silver);width:0"></i><i id="bP" style="background:var(--sip);width:0"></i></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--gold)"></span>Gold <b id="lG">0%</b></span>
+      <span><span class="sw" style="background:var(--silver)"></span>Silver <b id="lS">0%</b></span>
+      <span><span class="sw" style="background:var(--sip)"></span>SIPs <b id="lP">0%</b></span>
     </div>
   </div>
+  <div class="chartbox" style="height:220px"><canvas id="donut"></canvas></div>
+</section>
 
-  <!-- Metals Grid -->
-  <div class="metals-grid">
-    <!-- Gold Card -->
-    <div class="card gold-accent metal-card">
-      <div class="metal-header">
-        <div class="metal-title gold">24K Gold</div>
-        <div class="rate-badge" id="goldBadge">--</div>
-      </div>
-      <div class="metal-price gold" id="goldPrice">₹ --</div>
-
-      <button class="section-header section-toggle no-top-divider" type="button" aria-expanded="false" onclick="toggleSection('goldHoldSection', this)">
-        <span>Holdings</span>
-        <span class="section-chevron">▾</span>
-      </button>
-      <div class="section-collapsible" id="goldHoldSection">
-        <div class="section-collapsible-inner">
-          <div class="metal-row">
-            <div class="metal-field">
-              <div class="metal-field-label">Holdings (g)</div>
-              <input type="number" class="metal-input" id="goldHoldings" min="0" step="0.01" placeholder="0.0" inputmode="decimal" oninput="recalc()">
-              <div class="metal-hint">e.g. 10.5</div>
-            </div>
-            <div class="metal-field">
-              <div class="metal-field-label">Valuation</div>
-              <div class="metal-valuation" id="goldVal">--</div>
-              <div class="metal-change" id="goldChange">--</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button class="section-header section-toggle" type="button" aria-expanded="false" onclick="toggleSection('goldCalcSection', this)">
-        <span>Conversion Calculator</span>
-        <span class="section-chevron">▾</span>
-      </button>
-      <div class="section-collapsible" id="goldCalcSection">
-        <div class="section-collapsible-inner">
-          <div class="calc-section">
-            <div class="calc-header">
-              <button class="calc-btn active" id="goldCalcT1" onclick="setCalcMode('gold','rupees')">₹ → g</button>
-              <button class="calc-btn" id="goldCalcT2" onclick="setCalcMode('gold','grams')">g → ₹</button>
-            </div>
-            <div class="calc-input-result-row">
-              <div class="calc-input-box">
-                <div class="label" id="goldCalcLabel" style="margin-bottom: 8px;">Amount (₹):</div>
-                <div class="calc-input-wrap">
-                  <input type="number" class="calc-input" id="goldCalcInput" placeholder="0.00" step="0.01" inputmode="decimal" oninput="calcMetal('gold')">
-                  <span class="calc-unit" id="goldCalcUnit">₹</span>
-                </div>
-              </div>
-              <div class="calc-result" id="goldCalcResult">
-                <div>You can buy</div>
-                <div class="calc-result-val" id="goldCalcResultVal">--</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button class="section-header section-toggle" type="button" aria-expanded="false" onclick="toggleSection('goldInvSection', this)">
-        <span>Invested Amount Tracker</span>
-        <span class="section-chevron">▾</span>
-      </button>
-      <div class="section-collapsible" id="goldInvSection">
-        <div class="section-collapsible-inner">
-          <div class="invested-section">
-            <label class="invested-toggle">
-              <input type="checkbox" id="goldInvChk" onchange="toggleInvested('gold')">
-              Track Invested Amount
-            </label>
-            <div class="invested-body" id="goldInvBody">
-              <div class="metal-field-label">Invested Amount (₹)</div>
-              <input type="number" class="invested-input" id="goldInvAmt" min="1" step="0.01" placeholder="Enter amount…" oninput="recalc()">
-              <div class="invested-note" id="goldInvSummary"></div>
-              <div class="returns-box" id="goldReturns"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Silver Card -->
-    <div class="card silver-accent metal-card">
-      <div class="metal-header">
-        <div class="metal-title silver">Silver</div>
-        <div class="rate-badge" id="silverBadge">--</div>
-      </div>
-      <div class="metal-price silver" id="silverPrice">₹ --</div>
-
-      <button class="section-header section-toggle no-top-divider" type="button" aria-expanded="false" onclick="toggleSection('silverHoldSection', this)">
-        <span>Holdings</span>
-        <span class="section-chevron">▾</span>
-      </button>
-      <div class="section-collapsible" id="silverHoldSection">
-        <div class="section-collapsible-inner">
-          <div class="metal-row">
-            <div class="metal-field">
-              <div class="metal-field-label">Holdings (g)</div>
-              <input type="number" class="metal-input" id="silverHoldings" min="0" step="0.01" placeholder="0.0" inputmode="decimal" oninput="recalc()">
-              <div class="metal-hint">e.g. 250.0</div>
-            </div>
-            <div class="metal-field">
-              <div class="metal-field-label">Valuation</div>
-              <div class="metal-valuation" id="silverVal">--</div>
-              <div class="metal-change" id="silverChange">--</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button class="section-header section-toggle" type="button" aria-expanded="false" onclick="toggleSection('silverCalcSection', this)">
-        <span>Conversion Calculator</span>
-        <span class="section-chevron">▾</span>
-      </button>
-      <div class="section-collapsible" id="silverCalcSection">
-        <div class="section-collapsible-inner">
-          <div class="calc-section">
-            <div class="calc-header">
-              <button class="calc-btn active" id="silverCalcT1" onclick="setCalcMode('silver','rupees')">₹ → g</button>
-              <button class="calc-btn" id="silverCalcT2" onclick="setCalcMode('silver','grams')">g → ₹</button>
-            </div>
-            <div class="calc-input-result-row">
-              <div class="calc-input-box">
-                <div class="label" id="silverCalcLabel" style="margin-bottom: 8px;">Amount (₹):</div>
-                <div class="calc-input-wrap">
-                  <input type="number" class="calc-input" id="silverCalcInput" placeholder="0.00" step="0.01" inputmode="decimal" oninput="calcMetal('silver')">
-                  <span class="calc-unit" id="silverCalcUnit">₹</span>
-                </div>
-              </div>
-              <div class="calc-result" id="silverCalcResult">
-                <div>You can buy</div>
-                <div class="calc-result-val" id="silverCalcResultVal">--</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button class="section-header section-toggle" type="button" aria-expanded="false" onclick="toggleSection('silverInvSection', this)">
-        <span>Invested Amount Tracker</span>
-        <span class="section-chevron">▾</span>
-      </button>
-      <div class="section-collapsible" id="silverInvSection">
-        <div class="section-collapsible-inner">
-          <div class="invested-section">
-            <label class="invested-toggle">
-              <input type="checkbox" id="silverInvChk" onchange="toggleInvested('silver')">
-              Track Invested Amount
-            </label>
-            <div class="invested-body" id="silverInvBody">
-              <div class="metal-field-label">Invested Amount (₹)</div>
-              <input type="number" class="invested-input" id="silverInvAmt" min="1" step="0.01" placeholder="Enter amount…" oninput="recalc()">
-              <div class="invested-note" id="silverInvSummary"></div>
-              <div class="returns-box" id="silverReturns"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Rates Table Card -->
+<!-- METALS -->
+<div class="grid">
   <div class="card">
-    <div class="gsr-title" style="margin-bottom: 16px;">Historical Rates</div>
-    <div class="rates-section">
-      <table class="rates-table">
-        <thead>
-          <tr>
-            <th>Metal</th>
-            <th>Current (₹/g)</th>
-            <th>1D Ago (₹/g)</th>
-            <th>2D Ago (₹/g)</th>
-            <th>3D Ago (₹/g)</th>
-            <th>4D Ago (₹/g)</th>
-            <th>5D Ago (₹/g)</th>
-            <th>1D Diff (₹/g)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="metal-name gold">Gold</td>
-            <td id="tGoldNow">--</td>
-            <td id="tGoldD1">--</td>
-            <td id="tGoldD2">--</td>
-            <td id="tGoldD3">--</td>
-            <td id="tGoldD4">--</td>
-            <td id="tGoldD5">--</td>
-            <td id="tGoldDiff">--</td>
-          </tr>
-          <tr>
-            <td class="metal-name silver">Silver</td>
-            <td id="tSilverNow">--</td>
-            <td id="tSilverD1">--</td>
-            <td id="tSilverD2">--</td>
-            <td id="tSilverD3">--</td>
-            <td id="tSilverD4">--</td>
-            <td id="tSilverD5">--</td>
-            <td id="tSilverDiff">--</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="metal-title">
+      <h2 style="color:var(--gold)">Gold</h2>
+      <div class="purity-control">
+        <select id="purity" aria-label="Gold purity" title="Gold purity" onchange="savePortfolio();render()"><option value="1">24K</option><option value="0.916667">22K</option><option value="0.75">18K</option></select>
+      </div>
     </div>
+    <div class="rate" id="gRate">₹ --</div><div class="muted" id="gSub">/g</div>
+    <div class="kv"><span>Current holdings</span><b id="gHoldings">0 g</b></div>
+    <div class="purchase-form">
+      <div><label for="gPurchaseMonth">Month</label><input id="gPurchaseMonth" type="month"></div>
+      <div><label for="gPurchaseGrams">Grams purchased</label><input id="gPurchaseGrams" type="number" min="0" step="0.01" placeholder="e.g. 10"></div>
+      <button class="on" onclick="addMetalPurchase('gold')">Add / update</button>
+    </div>
+    <table class="sec"><thead><tr><th>Month</th><th>Grams purchased</th><th></th></tr></thead><tbody id="goldPurchaseBody"></tbody></table>
   </div>
 
-  <div class="footer">For informational purposes only — not financial advice</div>
+  <div class="card">
+    <h2 style="color:var(--silver)">Silver</h2>
+    <div class="rate" id="sRate">₹ --</div><div class="muted" id="sSub">/g</div>
+    <div class="kv"><span>Current holdings</span><b id="sHoldings">0 g</b></div>
+    <div class="purchase-form">
+      <div><label for="sPurchaseMonth">Month</label><input id="sPurchaseMonth" type="month"></div>
+      <div><label for="sPurchaseGrams">Grams purchased</label><input id="sPurchaseGrams" type="number" min="0" step="0.01" placeholder="e.g. 250"></div>
+      <button class="on" onclick="addMetalPurchase('silver')">Add / update</button>
+    </div>
+    <table class="sec"><thead><tr><th>Month</th><th>Grams purchased</th><th></th></tr></thead><tbody id="silverPurchaseBody"></tbody></table>
+  </div>
+
+  <div class="card">
+    <h2 style="color:var(--sip)">SIP: Tata Ethical Direct Plan Growth</h2>
+    <div class="muted" id="sipSince"></div>
+    <div class="row sip-form">
+      <div><label for="fmon">Month</label><input id="fmon" type="month" value="2026-10"></div>
+      <div><label for="fa">Amount invested (₹)</label><input id="fa" type="number" min="0" placeholder="1100"></div>
+    </div>
+    <button class="on sip-submit" onclick="addSip()">Add / update</button>
+    <table class="sec"><thead><tr><th>Month</th><th>Invested</th><th>Total so far</th><th></th></tr></thead><tbody id="sipBody"></tbody></table>
+    <div class="kv"><span>Current monthly SIP</span><b id="sipMonthly">₹ 0</b></div>
+    <div class="kv"><span>Total invested</span><b id="sipTotal">₹ 0</b></div>
+  </div>
+</div>
+
+<div class="utility-grid">
+  <div class="card">
+    <h2>Convert</h2>
+    <div class="muted">Amount ↔ grams at today's rate</div>
+    <label for="cm">Metal</label><select id="cm" onchange="convert()"><option value="g">Gold</option><option value="s">Silver</option></select>
+    <div class="row">
+      <div><label for="cr">Amount (₹)</label><input id="cr" type="number" placeholder="10000" oninput="convert('r')"></div>
+      <div><label for="cg">Grams</label><input id="cg" type="number" placeholder="0" oninput="convert('g')"></div>
+    </div>
+    <div class="kv sec"><span>Gold/silver ratio</span><span><b id="ratio">--</b> <span class="tag" id="ratioTag"></span></span></div>
+  </div>
+  <div class="card">
+    <h2>Price history · Trichy</h2>
+    <div class="tabs" style="margin-top:8px" id="metalTabs"></div>
+    <div class="tabs" style="margin-top:8px"><button class="on" type="button" aria-pressed="true">1W</button></div>
+    <div class="muted" id="histNote">Rates per gram · Goodreturns Trichy.</div>
+    <div class="chartbox"><canvas id="hist"></canvas></div>
+  </div>
+</div>
+
+<footer>For information only, not financial advice. Rates: Goodreturns, Trichy (per gram). Portfolio details are saved in this browser; market rates refresh automatically.</footer>
 </div>
 
 <script>
-  // ─────────────────────────────────────────────
-  // State
-  // ─────────────────────────────────────────────
-  const RATIO_AVG = 62;
-  let data  = null;
-  let mode  = 'buy';
-  let calcModes = { gold: 'rupees', silver: 'rupees' };
+Chart.defaults.color='#667085';Chart.defaults.borderColor='#dde2e8';
+/* ===== CONFIG: same source as the reference site (Goodreturns, Trichy only) ===== */
+const GOLD_URL = 'https://www.goodreturns.in/gold-rates/trichy.html';
+const SILVER_URL = 'https://www.goodreturns.in/silver-rates/trichy.html';
+const PROXY = u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u);   // CORS proxy, only used when this file is opened locally
 
-  const $ = id => document.getElementById(id);
+/* ===== STATE ===== */
+let rates = null;      // {xau, xag, inr, ts}  last good rates
+const FUND = 'Tata Ethical Direct Plan Growth';
+const STORAGE_KEY = 'ledgerline.portfolio.v2';
+const LEGACY_STORAGE_KEY = 'ledgerline.portfolio.v1';
+let sips = [{ m: '2026-09', amt: 1000 }, { m: '2026-10', amt: 1100 }];   // started Sep 2026
+let historyCache = [];
+const metalPurchases = { gold: [], silver: [] };
+const openingBalances = { gold: { grams: 0, invested: 0 }, silver: { grams: 0, invested: 0 } };
+let metalSel = 'g24';
+let storageNotice = '';
 
-  // ─────────────────────────────────────────────
-  // Formatters
-  // ─────────────────────────────────────────────
-  const fmtINR = (n, dp = 0) =>
-    '₹ ' + Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: dp, maximumFractionDigits: dp });
-
-  const arrow = up => `<span class="${up ? 'gain' : 'loss'}">${up ? '▲' : '▼'}</span>`;
-
-  function toggleSection(id, trigger) {
-    const section = $(id);
-    if (!section) return;
-    const isOpen = section.classList.toggle('active');
-    if (trigger) trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+const $ = id => document.getElementById(id);
+const num = id => parseFloat($(id).value) || 0;
+const inr = n => '₹ ' + Math.round(n).toLocaleString('en-IN');
+const pct = n => (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+const cls = n => n >= 0 ? 'up' : 'down';
+function setStorageNotice(message) {
+  storageNotice = message;
+  if (message) {
+    $('banner').style.display = 'block';
+    $('banner').textContent = message;
+  } else if (!rates) {
+    $('banner').style.display = 'none';
   }
-
-  // ─────────────────────────────────────────────
-  // Mode helpers
-  // ─────────────────────────────────────────────
-  function setMode(m) {
-    mode = m;
-    $('buyBtn').classList.toggle('active', m === 'buy');
-    $('sellBtn').classList.toggle('active', m === 'sell');
-    recalc();
-  }
-
-  function setCalcMode(metal, newMode) {
-    calcModes[metal] = newMode;
-    const t1 = $(`${metal}CalcT1`), t2 = $(`${metal}CalcT2`);
-    const label = $(`${metal}CalcLabel`), unit = $(`${metal}CalcUnit`);
-    if (newMode === 'rupees') {
-      t1.classList.add('active');    t2.classList.remove('active');
-      label.innerText = 'Amount (₹):'; unit.innerText = '₹';
+}
+function validPurchase(purchase) {
+  return purchase && /^\d{4}-(0[1-9]|1[0-2])$/.test(purchase.m) &&
+    Number.isFinite(purchase.grams) && purchase.grams > 0 &&
+    Number.isFinite(purchase.invested) && purchase.invested > 0;
+}
+function restorePortfolio() {
+  try {
+    const currentData = localStorage.getItem(STORAGE_KEY);
+    const legacyData = currentData ? null : localStorage.getItem(LEGACY_STORAGE_KEY);
+    const raw = currentData || legacyData;
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (!saved ||
+        !['1', '0.916667', '0.75'].includes(saved.purity) ||
+        !['g24', 'g22', 's', 'p'].includes(saved.metalSel) ||
+        !Array.isArray(saved.sips) ||
+        !saved.sips.every(entry => entry && /^\d{4}-(0[1-9]|1[0-2])$/.test(entry.m) && Number.isFinite(entry.amt) && entry.amt > 0) ||
+        !Array.isArray(saved.history)) {
+      throw new Error('Saved portfolio data has an invalid format.');
+    }
+    $('purity').value = saved.purity;
+    metalSel = saved.metalSel;
+    sips = saved.sips.slice().sort((a, b) => a.m.localeCompare(b.m));
+    if (saved.version === 1) {
+      const goldGrams = Number(saved.goldGrams) || 0;
+      const goldInvested = Number(saved.goldInvested) || 0;
+      const silverGrams = Number(saved.silverGrams) || 0;
+      const silverInvested = Number(saved.silverInvested) || 0;
+      if ([goldGrams, goldInvested, silverGrams, silverInvested].some(value => value < 0 || !Number.isFinite(value))) {
+        throw new Error('Saved metal balances have an invalid format.');
+      }
+      openingBalances.gold = { grams: goldGrams, invested: goldInvested };
+      openingBalances.silver = { grams: silverGrams, invested: silverInvested };
+    } else if (saved.version === 2) {
+      for (const metal of ['gold', 'silver']) {
+        const opening = saved.openingBalances?.[metal];
+        const purchases = saved.metalPurchases?.[metal];
+        if (!opening || !Number.isFinite(opening.grams) || opening.grams < 0 ||
+            !Number.isFinite(opening.invested) || opening.invested < 0 ||
+            !Array.isArray(purchases) || !purchases.every(validPurchase)) {
+          throw new Error(`Saved ${metal} purchase history has an invalid format.`);
+        }
+        openingBalances[metal] = { grams: opening.grams, invested: opening.invested };
+        metalPurchases[metal] = purchases.slice().sort((a, b) => a.m.localeCompare(b.m));
+      }
     } else {
-      t2.classList.add('active');    t1.classList.remove('active');
-      label.innerText = 'Amount (g):'; unit.innerText = 'g';
+      throw new Error('Saved portfolio data has an unsupported version.');
     }
-    $(`${metal}CalcInput`).value = '';
-    resetCalcResult(metal);
-    localStorage.setItem(`calcMode_${metal}`, newMode);
+    historyCache = saved.history.filter(point =>
+      point && /^\d{4}-\d{2}-\d{2}$/.test(point.date) &&
+      Number.isFinite(point.gold) && point.gold > 0 &&
+      Number.isFinite(point.silver) && point.silver > 0
+    );
+    if (!currentData) savePortfolio();
+  } catch (error) {
+    console.error('Could not restore saved portfolio data.', error);
+    setStorageNotice('Could not read saved data from this browser. Your changes may not persist.');
   }
-
-  function resetCalcResult(metal) {
-    const r = $(`${metal}CalcResult`);
-    r.classList.remove('has-value');
-    $(`${metal}CalcResultVal`).innerText = '--';
+}
+function savePortfolio() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      version: 2,
+      openingBalances,
+      metalPurchases,
+      purity: $('purity').value,
+      metalSel,
+      sips,
+      history: historyCache
+    }));
+    if (storageNotice.startsWith('Could not save') || storageNotice.startsWith('Could not read')) setStorageNotice('');
+  } catch (error) {
+    console.error('Could not save portfolio data in this browser.', error);
+    setStorageNotice('Could not save data in this browser. Check browser storage settings or available space.');
   }
-
-  // ─────────────────────────────────────────────
-  // Calculator
-  // ─────────────────────────────────────────────
-  function calcMetal(metal) {
-    if (!data) return;
-    const price = effectivePrice(metal === 'gold' ? data.gold.price : data.silver.price);
-    const raw   = ($(`${metal}CalcInput`).value || '').trim();
-    const val   = parseFloat(raw);
-    const resultEl = $(`${metal}CalcResult`);
-    const valEl    = $(`${metal}CalcResultVal`);
-
-    if (!raw || !Number.isFinite(val) || val <= 0) { resetCalcResult(metal); return; }
-
-    let display = '';
-    if (calcModes[metal] === 'rupees') {
-      display = `${(val / price).toFixed(4)} g`;
-    } else {
-      display = fmtINR(val * price, 2);
+}
+function mergeHistory(existing, incoming) {
+  const byDate = new Map(existing.map(point => [point.date, point]));
+  incoming.forEach(point => {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(point.date) &&
+        Number.isFinite(point.gold) && point.gold > 0 &&
+        Number.isFinite(point.silver) && point.silver > 0) {
+      byDate.set(point.date, point);
     }
-    resultEl.classList.add('has-value');
-    valEl.innerText = display;
+  });
+  const cutoff = dateMonthsAgo(6).toISOString().slice(0, 10);
+  return [...byDate.values()].filter(point => point.date >= cutoff).sort((a, b) => a.date.localeCompare(b.date));
+}
+function dateMonthsAgo(months) {
+  const date = new Date();
+  const day = date.getUTCDate();
+  date.setUTCDate(1);
+  date.setUTCMonth(date.getUTCMonth() - months);
+  date.setUTCDate(Math.min(day, new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)).getUTCDate()));
+  return date;
+}
+
+/* ===== RATES =====
+   1) Deployed on Netlify: uses your existing /.netlify/functions/rates (scrapes Goodreturns Trichy).
+   2) Opened as a local file: scrapes Goodreturns Trichy in the browser through a CORS proxy. */
+const numberFromText = v => { const m = String(v || '').match(/\d[\d,]*(?:\.\d+)?/); return m ? parseFloat(m[0].replace(/,/g, '')) : null; };
+function normalizePerGram(raw, ref) {            // same idea as rates.js: fixes 10g / 100g / kg quotes
+  if (!(raw > 0)) return null; if (!(ref > 0)) return +raw.toFixed(2);
+  let best = raw, score = Infinity;
+  for (let k = -4; k <= 6; k++) { const c = raw * Math.pow(10, k), d = Math.abs(Math.log10(c / ref)); if (d < score) { score = d; best = c; } }
+  return +best.toFixed(2);
+}
+function dateFromText(t) {
+  for (const re of [/\b\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4}\b/, /\b[A-Za-z]{3,9}\s+\d{1,2},\s+\d{4}\b/, /\b\d{1,2}[-/]\d{1,2}[-/]\d{2,4}\b/]) {
+    const m = t.match(re); if (m) { const d = new Date(m[0].replace(/(\d{1,2})(st|nd|rd|th)/gi, '$1')); if (!isNaN(d)) return d.toISOString().slice(0, 10); }
+  } return null;
+}
+function parseRates(doc) {
+  const c = doc.querySelector('table')?.querySelectorAll('tr')[1]?.querySelectorAll('td');
+  const price = numberFromText(c?.[1]?.textContent), prev = numberFromText(c?.[2]?.textContent);
+  if (price === null || prev === null) throw new Error('Could not read the rate table');
+  return { price, prevClose: prev, change: price - prev };
+}
+function parseHist(doc, ref) {
+  const m = new Map();
+  doc.querySelectorAll('table tr').forEach(tr => {
+    const td = tr.querySelectorAll('td'); if (td.length < 2) return;
+    const date = dateFromText(tr.textContent.replace(/\s+/g, ' ').trim()); if (!date || m.has(date)) return;
+    for (let i = 1; i < td.length; i++) { const n = numberFromText(td[i].textContent); if (n !== null) { const p = normalizePerGram(n, ref); if (p) m.set(date, p); break; } }
+  });
+  const cutoffDate = dateMonthsAgo(6).toISOString().slice(0, 10);
+  return [...m].map(([date, price]) => ({ date, price }))
+    .filter(point => point.date >= cutoffDate)
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+async function scrapeInBrowser() {
+  const get = async u => { const r = await fetch(PROXY(u)); if (!r.ok) throw new Error('Proxy ' + r.status); return new DOMParser().parseFromString(await r.text(), 'text/html'); };
+  const [g, sv] = await Promise.all([get(GOLD_URL), get(SILVER_URL)]);
+  const gold = parseRates(g), silver = parseRates(sv);
+  const sm = new Map(parseHist(sv, silver.price).map(d => [d.date, d.price]));
+  const history = parseHist(g, gold.price).filter(d => sm.has(d.date)).map(d => ({ date: d.date, gold: d.price, silver: sm.get(d.date) }));
+  return { gold, silver, history };
+}
+async function loadRates() {
+  let d;
+  try {
+    try { const r = await fetch('/.netlify/functions/rates'); if (!r.ok) throw 0; d = await r.json(); if (d.source !== 'live') throw 0; }
+    catch (_) { d = await scrapeInBrowser(); }
+    historyCache = mergeHistory(historyCache, d.history || d.history7 || []);
+    rates = { g24: d.gold.price, g24prev: d.gold.prevClose, s: d.silver.price, sprev: d.silver.prevClose, hist: historyCache, ts: new Date() };
+    savePortfolio();
+    if (!storageNotice) $('banner').style.display = 'none';
+  } catch (e) {
+    $('banner').style.display = 'block';
+    $('banner').textContent = storageNotice + (storageNotice ? ' ' : '') + (rates ? 'Could not refresh. Showing the last rates fetched at ' + rates.ts.toLocaleTimeString() + '. ' : 'Could not load Trichy rates. ') + '(' + (e.message || 'network error') + ')';
   }
+  render(); drawHistory();
+}
+const gram24 = () => rates ? rates.g24 : 0;
+const gramGold = () => gram24() * parseFloat($('purity').value);
+const gramSilver = () => rates ? rates.s : 0;
 
-  // ─────────────────────────────────────────────
-  // Invested Tracker
-  // ─────────────────────────────────────────────
-  function toggleInvested(metal) {
-    const enabled = $(`${metal}InvChk`).checked;
-    const body = $(`${metal}InvBody`);
-    const returns = $(`${metal}Returns`);
-    body.classList.toggle('active', enabled);
-    if (!enabled) returns.classList.remove('active');
-    localStorage.setItem(`inv_${metal}_enabled`, enabled ? '1' : '0');
-    recalc();
+/* ===== MAIN RENDER ===== */
+let donut;
+function render() {
+  const live = !!rates;
+  $('dot').className = 'dot' + (live ? '' : ' off');
+  $('statusTxt').textContent = live ? 'Updated ' + rates.ts.toLocaleTimeString() : 'No rates yet';
+
+  const gp = gramGold(), sp = gramSilver();
+  $('gRate').textContent = live ? inr(gp) : '₹ --';
+  $('sRate').textContent = live ? inr(sp) : '₹ --';
+  const r = live ? gram24() / sp : 0;
+  $('ratio').textContent = live ? r.toFixed(1) : '--';
+  $('ratioTag').textContent = !live ? '' : r > 85 ? 'silver looks cheap vs gold' : r < 65 ? 'gold looks cheap vs silver' : 'mid range';
+
+  const goldTotals = metalTotals('gold'), silverTotals = metalTotals('silver');
+  const gV = goldTotals.grams * gp, sV = silverTotals.grams * sp;
+  $('gHoldings').textContent = `${formatGrams(goldTotals.grams)} g`;
+  $('sHoldings').textContent = `${formatGrams(silverTotals.grams)} g`;
+
+  const sipTotal = sipSum();
+  const sipMonthly = sips.length ? sips[sips.length - 1].amt : 0;
+  $('sipMonthly').textContent = inr(sipMonthly);
+  $('sipTotal').textContent = inr(sipTotal);
+  const summaryReady = goldTotals.invested > 0 && silverTotals.invested > 0 && sipTotal > 0;
+  $('netPnl').hidden = !summaryReady;
+
+  const net = gV + sV + sipTotal, invested = goldTotals.invested + silverTotals.invested + sipTotal;
+  $('net').textContent = net ? inr(net) : '₹ --';
+  const diff = net - invested;
+  $('netPnl').innerHTML = invested ? `Invested ${inr(invested)} · <span class="${cls(diff)}">${diff >= 0 ? '+' : '−'}${inr(Math.abs(diff))} (${pct(diff / invested * 100)})</span>` : 'Add your holdings below to see profit and loss.';
+
+  const p = v => net ? v / net * 100 : 0;
+  [['G', gV], ['S', sV], ['P', sipTotal]].forEach(([k, v]) => { $('b' + k).style.width = p(v) + '%'; $('l' + k).textContent = p(v).toFixed(2) + '%'; });
+  if (donut) { donut.data.datasets[0].data = net ? [gV, sV, sipTotal] : [0, 0, 0]; donut.update(); }
+
+}
+/* ===== METAL PURCHASES ===== */
+const formatGrams = grams => grams.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+function metalTotals(metal) {
+  return metalPurchases[metal].reduce((total, purchase) => ({
+    grams: total.grams + purchase.grams,
+    invested: total.invested + purchase.invested
+  }), { ...openingBalances[metal] });
+}
+function addMetalPurchase(metal) {
+  const prefix = metal === 'gold' ? 'g' : 's';
+  const month = $(prefix + 'PurchaseMonth').value;
+  const grams = parseFloat($(prefix + 'PurchaseGrams').value);
+  const rate = metal === 'gold' ? gramGold() : gramSilver();
+  if (!month || !/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+    return alert('Choose the purchase month.');
   }
-
-  function updateReturns(metal, currentVal) {
-    const enabled = $(`${metal}InvChk`).checked;
-    const returnsEl  = $(`${metal}Returns`);
-    const summaryEl  = $(`${metal}InvSummary`);
-    const raw = ($(`${metal}InvAmt`).value || '').trim();
-    const invested = parseFloat(raw);
-
-    if (raw) localStorage.setItem(`inv_${metal}_amt`, raw);
-    else     localStorage.removeItem(`inv_${metal}_amt`);
-
-    if (!enabled || !Number.isFinite(invested) || invested <= 0) {
-      returnsEl.classList.remove('active');
-      summaryEl.textContent = '';
-      return;
-    }
-
-    summaryEl.textContent = `Invested Amount: ${fmtINR(invested, 2)}`;
-    const pnl = currentVal - invested;
-    const ret = (pnl / invested) * 100;
-    const cls = pnl >= 0 ? 'gain' : 'loss';
-    const sgn = pnl >= 0 ? '+' : '-';
-    returnsEl.className = 'returns-box active';
-    returnsEl.innerHTML = `Profit/Loss: <span class="${cls}">${sgn}${fmtINR(Math.abs(pnl), 2)}</span><br>Return: <span class="${cls}">${sgn}${Math.abs(ret).toFixed(2)}%</span>`;
+  if (!Number.isFinite(grams) || grams <= 0) {
+    return alert('Enter the grams purchased.');
   }
-
-  // ─────────────────────────────────────────────
-  // Loading / Error
-  // ─────────────────────────────────────────────
-  const SK_IDS = ['totalVal', 'totalChange', 'prevClose', 'goldPrice', 'silverPrice', 'goldVal', 'silverVal', 'tradeRatio', 'tradeAction'];
-
-  function setLoading(v) {
-    $('refreshBtn').disabled = v;
-    $('refreshBtn').innerText = '↻';
-    SK_IDS.forEach(id => { const el = $(id); if (el) el.classList.toggle('sk', v); });
+  if (!(rate > 0)) {
+    return alert('Wait for the current metal rate to load before recording a purchase.');
   }
-
-  function showError(msg) { $('errorText').innerText = msg; $('errorBanner').classList.add('visible'); }
-  function clearError()    { $('errorBanner').classList.remove('visible'); }
-
-  function updateSourceChip(src) {
-    const el = $('sourceChip');
-    if (!el) return;
-    el.className = `source-chip ${src}`;
-    el.innerText = src === 'live' ? '● Live' : (src === 'fallback' ? '⚠ Fallback' : 'Data Source: --');
+  const invested = grams * rate;
+  const existing = metalPurchases[metal].find(purchase => purchase.m === month);
+  if (existing) {
+    existing.grams += grams;
+    existing.invested += invested;
+  } else {
+    metalPurchases[metal].push({ m: month, grams, invested });
   }
+  metalPurchases[metal].sort((a, b) => a.m.localeCompare(b.m));
+  $(prefix + 'PurchaseGrams').value = '';
+  savePortfolio();
+  drawMetalPurchases(metal);
+  render();
+  drawHistory();
+}
+function removeMetalPurchase(metal, month) {
+  metalPurchases[metal] = metalPurchases[metal].filter(purchase => purchase.m !== month);
+  savePortfolio();
+  drawMetalPurchases(metal);
+  render();
+  drawHistory();
+}
+function drawMetalPurchases(metal) {
+  const body = $(metal === 'gold' ? 'goldPurchaseBody' : 'silverPurchaseBody');
+  body.innerHTML = metalPurchases[metal].map(purchase =>
+    `<tr><td>${monLabel(purchase.m)}</td><td>${formatGrams(purchase.grams)} g</td><td><button class="x" onclick="removeMetalPurchase('${metal}','${purchase.m}')" aria-label="Remove ${metal} purchase for ${monLabel(purchase.m)}">✕</button></td></tr>`
+  ).join('') || '<tr><td colspan="3" class="muted">No purchases recorded yet.</td></tr>';
+}
 
-  // ─────────────────────────────────────────────
-  // Helpers
-  // ─────────────────────────────────────────────
-  const effectivePrice = p => mode === 'buy' ? p : p * 0.97;
+/* ===== SIP ===== */
+const sipSum = () => sips.reduce((t, s) => t + s.amt, 0);
+const monLabel = m => new Date(m + '-01').toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
+function addSip() {
+  const m = $('fmon').value, amt = num('fa');
+  if (!m || amt <= 0) return alert('Pick a month and enter the amount.');
+  sips = sips.filter(s => s.m !== m).concat({ m, amt }).sort((a, b) => a.m.localeCompare(b.m));
+  $('fa').value = '';
+  savePortfolio();
+  drawSips(); render(); drawHistory();
+}
+function drawSips() {
+  let run = 0;
+  $('sipSince').textContent = sips.length ? 'Investing since ' + monLabel(sips[0].m) : 'No SIP months added yet.';
+  $('sipBody').innerHTML = sips.map((s, i) => { run += s.amt;
+    return `<tr><td>${monLabel(s.m)}</td><td>${inr(s.amt)}</td><td>${inr(run)}</td><td><button class="x" onclick="sips.splice(${i},1);savePortfolio();drawSips();render();drawHistory()" aria-label="Remove">✕</button></td></tr>`; }).join('')
+    || '<tr><td colspan="4" class="muted">Add your first month above.</td></tr>';
+}
 
-  const gsrSignal = (ratio, strategy) => {
-    if (strategy?.advice) {
-      const map = { 'BUY GOLD': { btn:'BUY GOLD', bg:'#fbbf24', fg:'#1a0f00' },
-                    'BUY SILVER': { btn:'BUY SILVER', bg:'#a8adb8', fg:'#0f1520' },
-                    'BALANCED':  { btn:'HOLD', bg:'#6b7280', fg:'#ffffff' } };
-      return map[strategy.advice] || map.BALANCED;
-    }
-    if (ratio < 50) return { btn:'BUY GOLD', bg:'#fbbf24', fg:'#1a0f00' };
-    if (ratio > 80) return { btn:'BUY SILVER', bg:'#a8adb8', fg:'#0f1520' };
-    return { btn:'HOLD', bg:'#6b7280', fg:'#ffffff' };
-  };
+/* ===== CONVERTER ===== */
+function convert(from) {
+  const p = $('cm').value === 'g' ? gramGold() : gramSilver();
+  if (!p) return;
+  if (from === 'g') $('cr').value = Math.round(num('cg') * p);
+  else $('cg').value = (num('cr') / p).toFixed(3);
+}
 
-  // ─────────────────────────────────────────────
-  // Main recalc
-  // ─────────────────────────────────────────────
-  function recalc() {
-    if (!data) return;
+/* ===== HISTORY CHART ===== */
+let hist;
+const gf = () => parseFloat($('purity').value);
+function getHistory(metal) {
+  const sourceHistory = rates ? rates.hist : historyCache;
+  if (!sourceHistory.length) return null;
+  const cutoff = new Date();
+  cutoff.setUTCDate(cutoff.getUTCDate() - 7);
+  const cutoffDate = cutoff.toISOString().slice(0, 10);
+  return sourceHistory.filter(h => h.date >= cutoffDate).map(h => {
+    const goldTotals = metalTotals('gold'), silverTotals = metalTotals('silver');
+    const v = metal === 'g24' ? h.gold : metal === 'g22' ? h.gold * 22 / 24 : metal === 's' ? h.silver
+      : goldTotals.grams * h.gold * gf() + silverTotals.grams * h.silver + sipSum();      // portfolio
+    return { date: h.date, x: new Date(h.date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }), y: Math.round(v * 100) / 100 };
+  });
+}
+const COLORS = { g24: '#c28e0e', g22: '#e0b24a', s: '#7d8799', p: '#1f7a6d' };
+function drawHistory() {
+  const data = getHistory(metalSel);
+  if (hist) hist.destroy();
+  $('histNote').textContent = !rates && !data ? 'Waiting for rates…' : !data ? 'Historical rates are not available from the source right now.'
+    : !data.length ? 'No rates available for the past week.' : 'Rates per gram · Goodreturns Trichy.';
+  if (!data) return;
+  if (!data.length) return;
+  const color = COLORS[metalSel];
+  hist = new Chart($('hist'), {
+    type: 'line',
+    data: { labels: data.map(d => d.x), datasets: [{ data: data.map(d => d.y), borderColor: color, backgroundColor: color + '22', fill: true, tension: .3, pointRadius: 3, borderWidth: 2 }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { autoSkip: true, maxTicksLimit: 8 } }, y: { ticks: { callback: v => '₹' + v.toLocaleString('en-IN') } } } }
+  });
+}
+function tabs(el, items, get, set) {
+  $(el).innerHTML = items.map(([k, l]) => `<button class="${get() === k ? 'on' : ''}" data-k="${k}">${l}</button>`).join('');
+  $(el).onclick = e => { const k = e.target.dataset.k; if (!k) return; set(isNaN(k) ? k : +k); savePortfolio(); tabs(el, items, get, set); drawHistory(); };
+}
 
-    const gh = Math.max(0, parseFloat($('goldHoldings').value) || 0);
-    const sh = Math.max(0, parseFloat($('silverHoldings').value) || 0);
-    localStorage.setItem('gw', $('goldHoldings').value);
-    localStorage.setItem('sw', $('silverHoldings').value);
-
-    const gp = effectivePrice(data.gold.price);
-    const sp = effectivePrice(data.silver.price);
-    const gPrev = effectivePrice(data.gold.prevClose);
-    const sPrev = effectivePrice(data.silver.prevClose);
-    const gv = gp * gh, sv = sp * sh, tv = gv + sv;
-
-    const pv = (gPrev * gh) + (sPrev * sh);
-    const tc = tv - pv;
-    const pct = pv > 0 ? (tc / pv * 100).toFixed(2) : '0.00';
-
-    // Portfolio
-    $('totalVal').textContent    = fmtINR(tv);
-    $('totalChange').innerHTML   = `${arrow(tc >= 0)} <span class="${tc >= 0 ? 'gain' : 'loss'}">${fmtINR(Math.abs(tc))} (${Math.abs(Number(pct)).toFixed(2)}%)</span> <span style="color:#7d8695">Today</span>`;
-    $('prevClose').textContent   = `Previous Close: ${fmtINR(pv)}`;
-    $('asOf').textContent        = `As of ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} | ${data.date}`;
-    const goldShare = tv > 0 ? (gv / tv) * 100 : 0;
-    const silverShare = tv > 0 ? (sv / tv) * 100 : 0;
-    $('allocGoldPct').textContent = `${goldShare.toFixed(1)}%`;
-    $('allocSilverPct').textContent = `${silverShare.toFixed(1)}%`;
-    $('allocGoldBar').style.width = `${goldShare}%`;
-    $('allocSilverBar').style.width = `${silverShare}%`;
-    $('allocGoldVal').textContent = fmtINR(gv);
-    $('allocSilverVal').textContent = fmtINR(sv);
-
-    // Prices & badges
-    $('goldPrice').textContent   = fmtINR(gp, 2);
-    $('silverPrice').textContent = fmtINR(sp, 2);
-
-    const gDiff = gp - effectivePrice(data.gold.prevClose);
-    const sDiff = sp - effectivePrice(data.silver.prevClose);
-    $('goldBadge').innerHTML   = `${arrow(gDiff >= 0)} <span class="${gDiff >= 0 ? 'gain' : 'loss'}">${fmtINR(Math.abs(gDiff), 2)} / g</span>`;
-    $('silverBadge').innerHTML = `${arrow(sDiff >= 0)} <span class="${sDiff >= 0 ? 'gain' : 'loss'}">${fmtINR(Math.abs(sDiff), 2)} / g</span>`;
-
-    // Valuations
-    $('goldVal').textContent    = fmtINR(gv);
-    $('silverVal').textContent  = fmtINR(sv);
-    const gPortDelta = (data.gold.change || 0) * gh;
-    const sPortDelta = (data.silver.change || 0) * sh;
-    $('goldChange').innerHTML   = `${arrow(gPortDelta >= 0)} <span class="${gPortDelta >= 0 ? 'gain' : 'loss'}">${fmtINR(Math.abs(gPortDelta))}</span>`;
-    $('silverChange').innerHTML = `${arrow(sPortDelta >= 0)} <span class="${sPortDelta >= 0 ? 'gain' : 'loss'}">${fmtINR(Math.abs(sPortDelta))}</span>`;
-
-    // Returns
-    updateReturns('gold',   gv);
-    updateReturns('silver', sv);
-
-    // Rates Table
-    const hist  = Array.isArray(data.history7) ? data.history7 : [];
-    const mf    = mode === 'buy' ? 1 : 0.97;
-    const dayVal = (idx, metal) => {
-      const e = hist[hist.length - 2 - idx];
-      return e && typeof e[metal] === 'number' ? fmtINR(e[metal] * mf, 2) : '--';
-    };
-    $('tGoldNow').textContent    = fmtINR(gp, 2);
-    $('tGoldD1').textContent     = dayVal(0, 'gold');
-    $('tGoldD2').textContent     = dayVal(1, 'gold');
-    $('tGoldD3').textContent     = dayVal(2, 'gold');
-    $('tGoldD4').textContent     = dayVal(3, 'gold');
-    $('tGoldD5').textContent     = dayVal(4, 'gold');
-    $('tGoldDiff').innerHTML     = `<span class="${gDiff >= 0 ? 'gain' : 'loss'}">${gDiff >= 0 ? '+' : '-'}${fmtINR(Math.abs(gDiff), 2)}</span>`;
-    $('tSilverNow').textContent  = fmtINR(sp, 2);
-    $('tSilverD1').textContent   = dayVal(0, 'silver');
-    $('tSilverD2').textContent   = dayVal(1, 'silver');
-    $('tSilverD3').textContent   = dayVal(2, 'silver');
-    $('tSilverD4').textContent   = dayVal(3, 'silver');
-    $('tSilverD5').textContent   = dayVal(4, 'silver');
-    $('tSilverDiff').innerHTML   = `<span class="${sDiff >= 0 ? 'gain' : 'loss'}">${sDiff >= 0 ? '+' : '-'}${fmtINR(Math.abs(sDiff), 2)}</span>`;
-
-    // Ratio signal (moved into trade controls)
-    const ratio = Number(data.ratio?.current) || (gp / sp);
-    const sig   = gsrSignal(ratio, data.strategy);
-    const actionColor = sig.btn === 'BUY GOLD' ? '#fbbf24' : (sig.btn === 'BUY SILVER' ? '#a8adb8' : '#94a3b8');
-    $('tradeRatio').textContent = ratio.toFixed(2);
-    const actionEl = $('tradeAction');
-    const actionText = actionEl.querySelector('.trade-action-text');
-    const actionClass = sig.btn === 'BUY GOLD' ? 'buy' : (sig.btn === 'BUY SILVER' ? 'sell' : 'hold');
-    actionEl.classList.remove('buy', 'sell', 'hold');
-    actionEl.classList.add(actionClass);
-    actionText.textContent = sig.btn;
-
-    $('tradeNote').textContent = mode === 'buy'
-      ? 'Buy uses spot price.'
-      : (mode === 'sell'
-        ? 'Sell uses 97% of spot.'
-        : 'Hold keeps current allocation.');
-  }
-
-  // ─────────────────────────────────────────────
-  // Fetch
-  // ─────────────────────────────────────────────
-  async function refreshRates() {
-    setLoading(true);
-    clearError();
-    try {
-      const res = await fetch('/.netlify/functions/rates');
-      if (!res.ok) throw new Error(`Server ${res.status}`);
-      data = await res.json();
-      updateSourceChip(data.source);
-      recalc();
-    } catch (e) {
-      showError(`Could not fetch rates: ${e.message}`);
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // ─────────────────────────────────────────────
-  // Init
-  // ─────────────────────────────────────────────
-  window.onload = () => {
-    $('goldHoldings').value   = localStorage.getItem('gw') || '';
-    $('silverHoldings').value = localStorage.getItem('sw') || '';
-
-    for (const m of ['gold','silver']) {
-      const en  = localStorage.getItem(`inv_${m}_enabled`) === '1';
-      const amt = localStorage.getItem(`inv_${m}_amt`) || '';
-      $(`${m}InvChk`).checked  = en;
-      $(`${m}InvAmt`).value    = amt;
-      $(`${m}InvBody`).classList.toggle('active', en);
-
-      const cm = localStorage.getItem(`calcMode_${m}`) || 'rupees';
-      calcModes[m] = cm;
-      if (cm === 'grams') setCalcMode(m, 'grams');
-    }
-
-    refreshRates();
-  };
+/* ===== INIT ===== */
+donut = new Chart($('donut'), {
+  type: 'doughnut',
+  data: { labels: ['Gold', 'Silver', 'SIPs'], datasets: [{ data: [0, 0, 0], backgroundColor: ['#c28e0e', '#7d8799', '#1f7a6d'], borderColor: '#ffffff', borderWidth: 2 }] },
+  options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.label + ': ' + inr(c.raw) } } } }
+});
+tabs('metalTabs', [['g24', 'Gold 24K'], ['g22', 'Gold 22K'], ['s', 'Silver'], ['p', 'Portfolio']], () => metalSel, v => metalSel = v);
+restorePortfolio();
+const currentMonth = new Date();
+const defaultPurchaseMonth = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
+['gPurchaseMonth', 'sPurchaseMonth'].forEach(id => { $(id).value = defaultPurchaseMonth; });
+drawSips(); drawMetalPurchases('gold'); drawMetalPurchases('silver'); render(); loadRates();
+setInterval(loadRates, 5 * 60 * 1000);   // auto-refresh every 5 min
 </script>
 </body>
 </html>

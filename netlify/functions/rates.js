@@ -98,8 +98,18 @@ const extractDateFromText = (text) => {
     return null;
 };
 
+const dateMonthsAgo = (months) => {
+    const date = new Date();
+    const day = date.getUTCDate();
+    date.setUTCDate(1);
+    date.setUTCMonth(date.getUTCMonth() - months);
+    date.setUTCDate(Math.min(day, new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)).getUTCDate()));
+    return date;
+};
+
 const parseHistoricalRates = ($, referencePerGram) => {
     const byDate = new Map();
+    const cutoffDate = dateMonthsAgo(6).toISOString().slice(0, 10);
 
     $('table tr').each((_, tr) => {
         const tds = $(tr).find('td');
@@ -107,7 +117,7 @@ const parseHistoricalRates = ($, referencePerGram) => {
 
         const rowText = $(tr).text().replace(/\s+/g, ' ').trim();
         const date = extractDateFromText(rowText);
-        if (!date) return;
+        if (!date || date < cutoffDate) return;
 
         let price = null;
         for (let i = 1; i < tds.length; i += 1) {
@@ -127,11 +137,10 @@ const parseHistoricalRates = ($, referencePerGram) => {
 
     return Array.from(byDate.entries())
         .map(([date, price]) => ({ date, price }))
-        .sort((a, b) => a.date.localeCompare(b.date))
-        .slice(-7);
+        .sort((a, b) => a.date.localeCompare(b.date));
 };
 
-const buildHistory7 = (goldHistory, silverHistory) => {
+const buildHistory = (goldHistory, silverHistory) => {
     const silverMap = new Map(silverHistory.map((d) => [d.date, d.price]));
     return goldHistory
         .filter((d) => silverMap.has(d.date))
@@ -140,11 +149,10 @@ const buildHistory7 = (goldHistory, silverHistory) => {
             gold: d.price,
             silver: silverMap.get(d.date)
         }))
-        .sort((a, b) => a.date.localeCompare(b.date))
-        .slice(-7);
+        .sort((a, b) => a.date.localeCompare(b.date));
 };
 
-const buildPayload = (gold, silver, source, history7 = [], historyIsExact = false, error = null) => {
+const buildPayload = (gold, silver, source, history = [], historyIsExact = false, error = null) => {
     const ratio = buildRatio(gold.price, silver.price);
     const numericRatio = Number.parseFloat(ratio.current) || 0;
     const strategy = buildStrategy(numericRatio);
@@ -162,7 +170,8 @@ const buildPayload = (gold, silver, source, history7 = [], historyIsExact = fals
         silver,
         ratio,
         strategy,
-        history7,
+        history,
+        history7: history.slice(-7),
         historyIsExact,
         ...(error ? { error } : {})
     };
@@ -198,8 +207,8 @@ const handler = async (event, context) => {
         const silver = parseRates($s);
         const goldHistory = parseHistoricalRates($g, gold.price);
         const silverHistory = parseHistoricalRates($s, silver.price);
-        const history7 = buildHistory7(goldHistory, silverHistory);
-        const payload = buildPayload(gold, silver, 'live', history7, history7.length >= 4);
+        const history = buildHistory(goldHistory, silverHistory);
+        const payload = buildPayload(gold, silver, 'live', history, history.length >= 4);
 
         return {
             statusCode: 200,
