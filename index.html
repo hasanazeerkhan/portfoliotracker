@@ -46,10 +46,11 @@ button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .summary-change.down{color:var(--down)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:16px}
 .grid>.card>.metal-title{margin-bottom:12px}
-.utility-grid{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.2fr);grid-template-areas:"convert history" "ratio history";gap:16px;margin-top:16px;align-items:stretch}
+.utility-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"convert sip-calculator history" "ratio sip-calculator history";gap:16px;margin-top:16px;align-items:stretch}
 .utility-grid>.card{min-width:0}
 .convert-card{grid-area:convert}
 .ratio-card{grid-area:ratio}
+.sip-calculator-card{grid-area:sip-calculator}
 .history-card{grid-area:history}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
 .card h2{font-size:19px;margin-bottom:4px}
@@ -91,6 +92,26 @@ input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-rad
 .ratio-guidance.gold{color:#805b00}
 .ratio-guidance.silver{color:#475467}
 .ratio-guidance.hold,.ratio-guidance.neutral{color:var(--mute)}
+.sip-calculator-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.sip-calculator-fields label{margin:0 0 5px;font-weight:700}
+.sip-calculator-fields input{height:42px;font-variant-numeric:tabular-nums}
+.sip-calculator-fields>div:first-child{grid-column:1/-1}
+.sip-calculator-mode{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:12px;padding:3px;background:#f0f2f5;border-radius:9px}
+.sip-calculator-mode button{min-height:36px;border-color:transparent;background:transparent;color:var(--mute);font-size:13px;font-weight:700}
+.sip-calculator-mode button[aria-pressed="true"]{color:var(--sip);background:#fff;border-color:#dcebe7;box-shadow:0 1px 2px #14213d12}
+.sip-calculator-result{margin-top:16px;padding:12px;background:#f4f8f7;border:1px solid #dcebe7;border-radius:10px}
+.sip-calculator-total-label{color:var(--mute);font-size:12px}
+.sip-calculator-total{display:block;white-space:nowrap;font:700 23px/1.2 'Bricolage Grotesque',sans-serif;font-variant-numeric:tabular-nums}
+.sip-calculator-breakdown{margin-top:6px}
+.sip-calculator-breakdown .kv{padding:4px 0;font-size:12px}
+.sip-calculator-breakdown .kv b{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.sip-calculator-allocation{margin-top:8px}
+.sip-calculator-allocation .bar{margin-top:0}
+.sip-calculator-invested-bar{background:var(--sip)}
+.sip-calculator-returns-bar{background:#d9eee9}
+.sip-calculator-allocation .legend{gap:12px;margin-top:6px;font-size:12px}
+.sip-calculator-allocation .sw{width:8px;height:8px}
+.sip-calculator-message{margin-top:8px;min-height:18px;font-size:12px}
 .up{color:var(--up)} .down{color:var(--down)}
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
 .history-heading{display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -102,6 +123,9 @@ td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left} th{co
 .chartbox canvas{max-width:100%}
 .tag{font-size:12px;background:#eef1f4;border-radius:6px;padding:2px 8px;color:var(--mute)}
 footer{margin-top:30px;color:var(--mute);font-size:13px;text-align:center}
+@media(min-width:761px) and (max-width:980px){
+  .utility-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"convert sip-calculator" "ratio sip-calculator" "history history"}
+}
 @media(max-width:760px){
   .wrap{padding:16px 12px 36px}
   .top{align-items:flex-start;gap:6px}
@@ -123,7 +147,7 @@ footer{margin-top:30px;color:var(--mute);font-size:13px;text-align:center}
   .convert-options{gap:8px}
   .convert-switch button{padding:5px 4px;font-size:12px}
   .grid,.utility-grid{grid-template-columns:minmax(0,1fr);gap:12px}
-  .utility-grid{grid-template-areas:"convert" "ratio" "history"}
+  .utility-grid{grid-template-areas:"convert" "sip-calculator" "ratio" "history"}
   .card{padding:16px}
   .utility-grid{margin-top:16px}
   .chartbox{height:230px}
@@ -220,6 +244,39 @@ footer{margin-top:30px;color:var(--mute);font-size:13px;text-align:center}
     <div class="metal-title ratio-heading"><h3>Ratio</h3><div class="holding-tile neutral" id="ratioTile"><span id="ratio">--</span></div></div>
     <div class="ratio-guidance neutral" id="ratioGuidance" aria-live="polite">Load rates to see relative performance.</div>
   </div>
+  <section class="card sip-calculator-card" aria-labelledby="sipCalculatorHeading">
+    <h2 id="sipCalculatorHeading">SIP Calculator</h2>
+    <div class="muted" id="sipCalculatorDescription">Estimate the future value of monthly investments.</div>
+    <div class="sip-calculator-mode" role="group" aria-label="Investment type">
+      <button type="button" id="sipModeTab" aria-pressed="true" onclick="setSipCalculatorMode('sip')">SIP</button>
+      <button type="button" id="lumpsumModeTab" aria-pressed="false" onclick="setSipCalculatorMode('lumpsum')">Lumpsum</button>
+    </div>
+    <div id="sipCalculatorPanel">
+    <div class="sip-calculator-fields">
+      <div><label id="sipCalculatorAmountLabel" for="sipCalculatorMonthly">Monthly investment (₹)</label><input id="sipCalculatorMonthly" type="number" min="500" max="1000000" step="500" value="2500" inputmode="numeric"></div>
+      <div><label for="sipCalculatorReturn">Expected return (%)</label><input id="sipCalculatorReturn" type="number" min="0" max="30" step="0.1" value="12" inputmode="decimal"></div>
+      <div><label for="sipCalculatorYears">Time period (years)</label><input id="sipCalculatorYears" type="number" min="1" max="40" step="1" value="10" inputmode="numeric"></div>
+    </div>
+    <div class="sip-calculator-result" aria-live="polite">
+      <div>
+        <div class="sip-calculator-total-label">Estimated total value</div>
+        <output class="sip-calculator-total" id="sipCalculatorTotal" for="sipCalculatorMonthly sipCalculatorReturn sipCalculatorYears">₹ 0</output>
+        <div class="sip-calculator-breakdown">
+          <div class="kv"><span>Invested amount</span><b id="sipCalculatorInvested">₹ 0</b></div>
+          <div class="kv"><span>Est. returns</span><b id="sipCalculatorReturns">₹ 0</b></div>
+        </div>
+        <div class="sip-calculator-allocation" aria-label="Investment allocation">
+          <div class="bar" aria-hidden="true"><i class="sip-calculator-invested-bar" id="sipCalculatorInvestedBar" style="width:0"></i><i class="sip-calculator-returns-bar" id="sipCalculatorReturnsBar" style="width:0"></i></div>
+          <div class="legend">
+            <span><span class="sw sip-calculator-invested-bar"></span>Invested <b id="sipCalculatorInvestedPercent">--</b></span>
+            <span><span class="sw sip-calculator-returns-bar"></span>Returns <b id="sipCalculatorReturnsPercent">--</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="muted sip-calculator-message" id="sipCalculatorMessage">For illustration only. Actual returns may vary.</div>
+  </section>
   <div class="card history-card">
     <div class="history-heading"><h2>Price History</h2></div>
     <div class="tabs" style="margin-top:8px" id="metalTabs" role="group" aria-label="Select price history metal"></div>
@@ -656,6 +713,86 @@ function convert() {
     : inr(value * p);
 }
 
+/* ===== SIP CALCULATOR ===== */
+let sipCalculatorMode = 'sip';
+function setSipCalculatorMode(mode) {
+  if (mode !== 'sip' && mode !== 'lumpsum') throw new Error(`Unsupported investment type: ${mode}`);
+  sipCalculatorMode = mode;
+  const sipMode = mode === 'sip';
+  $('sipModeTab').setAttribute('aria-pressed', String(sipMode));
+  $('lumpsumModeTab').setAttribute('aria-pressed', String(!sipMode));
+  $('sipCalculatorHeading').textContent = sipMode ? 'SIP Calculator' : 'Lumpsum Calculator';
+  $('sipCalculatorDescription').textContent = sipMode
+    ? 'Estimate the future value of monthly investments.'
+    : 'Estimate the future value of a one-time investment.';
+  $('sipCalculatorAmountLabel').textContent = sipMode ? 'Monthly investment (₹)' : 'Total investment (₹)';
+  $('sipCalculatorMonthly').min = sipMode ? '500' : '1';
+  $('sipCalculatorMonthly').max = sipMode ? '1000000' : '10000000';
+  $('sipCalculatorMonthly').step = sipMode ? '500' : '1000';
+  $('sipCalculatorMonthly').placeholder = sipMode ? 'e.g. 2,500' : 'e.g. 1,00,000';
+  calculateSip();
+}
+
+function calculateSip() {
+  const monthlyValue = $('sipCalculatorMonthly').value.trim();
+  const returnValue = $('sipCalculatorReturn').value.trim();
+  const yearsValue = $('sipCalculatorYears').value.trim();
+  const monthlyAmount = Number(monthlyValue);
+  const annualReturn = Number(returnValue);
+  const years = Number(yearsValue);
+  const message = $('sipCalculatorMessage');
+  const minimumInvestment = sipCalculatorMode === 'sip' ? 500 : 1;
+  const maximumInvestment = sipCalculatorMode === 'sip' ? 1000000 : 10000000;
+  if (!monthlyValue || !returnValue || !yearsValue ||
+      !Number.isFinite(monthlyAmount) || !Number.isInteger(monthlyAmount) ||
+      monthlyAmount < minimumInvestment || monthlyAmount > maximumInvestment ||
+      !Number.isFinite(annualReturn) || annualReturn < 0 || annualReturn > 30 ||
+      !Number.isFinite(years) || !Number.isInteger(years) || years < 1 || years > 40) {
+    $('sipCalculatorTotal').textContent = '--';
+    $('sipCalculatorInvested').textContent = '--';
+    $('sipCalculatorReturns').textContent = '--';
+    $('sipCalculatorInvestedBar').style.width = '0%';
+    $('sipCalculatorReturnsBar').style.width = '0%';
+    $('sipCalculatorInvestedPercent').textContent = '--';
+    $('sipCalculatorReturnsPercent').textContent = '--';
+    message.textContent = `Enter an investment from ₹${minimumInvestment.toLocaleString('en-IN')} to ₹${maximumInvestment.toLocaleString('en-IN')}, a return from 0% to 30%, and a period from 1 to 40 years.`;
+    return;
+  }
+
+  const months = years * 12;
+  const projectedAnnualReturn = Math.max(annualReturn, 1);
+  // Match Groww's effective monthly rate and beginning-of-month SIP installments.
+  const monthlyReturn = Math.pow(1 + projectedAnnualReturn / 100, 1 / 12) - 1;
+  const invested = sipCalculatorMode === 'sip' ? monthlyAmount * months : monthlyAmount;
+  const total = sipCalculatorMode === 'lumpsum'
+    ? monthlyAmount * Math.pow(1 + projectedAnnualReturn / 100, years)
+    : monthlyAmount * ((Math.pow(1 + monthlyReturn, months) - 1) / monthlyReturn) * (1 + monthlyReturn);
+  if (!Number.isFinite(total) || !Number.isSafeInteger(Math.round(total)) || !Number.isSafeInteger(invested)) {
+    $('sipCalculatorTotal').textContent = '--';
+    $('sipCalculatorInvested').textContent = '--';
+    $('sipCalculatorReturns').textContent = '--';
+    $('sipCalculatorInvestedBar').style.width = '0%';
+    $('sipCalculatorReturnsBar').style.width = '0%';
+    $('sipCalculatorInvestedPercent').textContent = '--';
+    $('sipCalculatorReturnsPercent').textContent = '--';
+    message.textContent = 'These values are too large to calculate. Try a smaller investment, return, or period.';
+    return;
+  }
+
+  $('sipCalculatorTotal').textContent = inr(total);
+  $('sipCalculatorInvested').textContent = inr(invested);
+  $('sipCalculatorReturns').textContent = inr(total - invested);
+  const investedShare = (invested / total) * 100;
+  const returnsShare = 100 - investedShare;
+  $('sipCalculatorInvestedBar').style.width = `${investedShare}%`;
+  $('sipCalculatorReturnsBar').style.width = `${returnsShare}%`;
+  $('sipCalculatorInvestedPercent').textContent = `${investedShare.toFixed(2)}%`;
+  $('sipCalculatorReturnsPercent').textContent = `${returnsShare.toFixed(2)}%`;
+  message.textContent = annualReturn === 0
+    ? 'Groww applies a 1% minimum when 0% is entered. For illustration only; actual returns may vary.'
+    : 'For illustration only. Actual returns may vary.';
+}
+
 /* ===== HISTORY CHART ===== */
 let hist;
 function getHistory() {
@@ -724,6 +861,10 @@ const currentMonth = new Date();
 const defaultPurchaseMonth = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}`;
 ['gPurchaseMonth', 'sPurchaseMonth'].forEach(id => { $(id).value = defaultPurchaseMonth; });
 $('fmon').value = defaultPurchaseMonth;
+['sipCalculatorMonthly', 'sipCalculatorReturn', 'sipCalculatorYears'].forEach(id => {
+  $(id).addEventListener('input', calculateSip);
+});
+calculateSip();
 drawSips(); drawMetalPurchases('gold'); drawMetalPurchases('silver'); render(); loadRates();
 setInterval(loadRates, 5 * 60 * 1000);   // auto-refresh every 5 min
 </script>
